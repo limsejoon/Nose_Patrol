@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>냄새알림 · 주민 카톡 (시뮬레이터)</title>
+<style>
+  body{margin:0;font-family:'Noto Sans KR',Arial,sans-serif;background:#e9ecef;display:flex;justify-content:center}
+  .phone{width:420px;height:100vh;display:flex;flex-direction:column;background:#BFD0DD}
+  .top{background:#A9BDCB;padding:12px 16px;display:flex;gap:8px;align-items:center;font-weight:700}
+  .top select{margin-left:auto}
+  #log{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+  .b{max-width:78%;padding:10px 14px;border-radius:16px;font-size:15px;line-height:1.45;white-space:pre-wrap}
+  .me{align-self:flex-end;background:#F4DE72}.bot{align-self:flex-start;background:#fff}
+  .note{align-self:center;font-size:12px;color:#556}
+  form{display:flex;gap:6px;padding:10px;background:#fff}
+  input{flex:1;padding:10px;border:1px solid #ccc;border-radius:18px;font-size:15px}
+  button{border:0;border-radius:18px;padding:10px 14px;background:#F4DE72;font-weight:700;cursor:pointer}
+  .loc{background:#e7eef3;font-size:13px}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="top">냄새알림 채널
+    <select id="user">
+      <option value="resident_A">주민 A</option><option value="resident_B">주민 B</option>
+      <option value="resident_C">주민 C</option><option value="resident_D">주민 D</option>
+    </select>
+  </div>
+  <div id="log"><div class="note">대회판 시뮬레이터 · 실제 카카오톡과 같은 Agent가 답합니다</div></div>
+  <form id="f">
+    <button type="button" class="loc" id="loc" title="대회판: 현재 위치를 가상 마을로 보냄">📍현재 위치</button>
+    <input id="t" placeholder="예: 오늘 아침부터 냄새 진짜 심하다" autocomplete="off">
+    <button>보내기</button>
+  </form>
+</div>
+<script>
+const log=document.getElementById('log');
+let placeVillage=null;
+function add(t,cls){const d=document.createElement('div');d.className='b '+cls;d.textContent=t;log.appendChild(d);log.scrollTop=1e9}
+document.getElementById('loc').onclick=()=>{
+  placeVillage=prompt('현재 위치(가상): 광령1리 / 광령2리 / 광령3리 중 입력','광령3리');
+  if(placeVillage) add('📍 현재 위치: '+placeVillage+' (다음 메시지에 적용)','note');
+};
+document.getElementById('user').onchange=()=>{log.innerHTML='<div class="note">사용자 변경: '+document.getElementById('user').selectedOptions[0].text+'</div>'};
+document.getElementById('f').onsubmit=async e=>{
+  e.preventDefault();
+  const t=document.getElementById('t').value.trim(); if(!t) return;
+  add(t,'me'); document.getElementById('t').value='';
+  const r=await fetch('/api/message',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({user:document.getElementById('user').value,text:t,place_village:placeVillage})});
+  placeVillage=null;
+  const j=await r.json(); add(j.reply,'bot');
+};
+</script>
+</body>
+</html>

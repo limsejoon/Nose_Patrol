@@ -1,0 +1,9 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+data/processed/*
+!data/processed/.gitkeep
+# 제출물에 포함해야 하는 전처리 결과 (센터 PC가 인터넷 없이 쓰도록)
+!data/processed/facilities.csv
+!data/processed/geocode_cache.json

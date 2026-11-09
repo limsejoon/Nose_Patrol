@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>냄새알림 · 센터 화면</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root{--dark:#16312C;--teal:#2F7F86;--orange:#B85A1A;--bg:#EDF3F1;--card:#FDFCF8;--line:#DDD8CC;--text:#2B3633;--sub:#6B7672}
+  [hidden]{display:none!important}
+  *{box-sizing:border-box} body{margin:0;font-family:'Noto Sans KR',Arial,sans-serif;background:var(--bg);color:var(--text)}
+  header{display:flex;align-items:center;gap:10px 16px;background:var(--dark);color:#F3F1EA;padding:12px 24px;flex-wrap:wrap}
+  header h1{font-size:22px;margin:0;white-space:nowrap} header a,header button{white-space:nowrap} header .sub{color:#BFD3CD;font-size:14px}
+  header .sp{flex:1} header button,header a{background:#1F4039;color:#F3F1EA;border:1px solid #3E5C55;border-radius:8px;padding:8px 12px;font-size:14px;cursor:pointer;text-decoration:none}
+  body{display:flex;flex-direction:column;height:100vh}
+  main{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;padding:16px;flex:1;min-height:0}
+  #map{border-radius:14px;height:100%}
+  .panel{overflow:auto;display:flex;flex-direction:column;gap:12px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+  .card h3{margin:0 0 8px;font-size:16px}
+  .badge{display:inline-block;border-radius:20px;padding:3px 12px;color:#fff;font-weight:700;font-size:14px}
+  .s0{background:#8A9792}.s1{background:var(--teal)}.s2{background:var(--orange)}.s3{background:#7A2E0E}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px dashed var(--line);font-size:14px}
+  .bar{height:12px;background:#D9772B;border-radius:4px}
+  .act{border-left:4px solid var(--teal);padding:8px 10px;margin:6px 0;background:#F4F8F7;border-radius:6px;font-size:14px;white-space:pre-wrap}
+  .act.city_call,.act.sms{border-color:var(--orange);background:#FBEBDD}.act.complaint{border-color:#7A2E0E}
+  .act button{margin-top:6px;border:0;border-radius:6px;padding:6px 10px;background:var(--dark);color:#fff;cursor:pointer}
+  .muted{color:var(--sub);font-size:13px}
+  .facm{background:#5B4A8B;color:#fff;border:2px solid #fff;border-radius:6px;text-align:center;font-weight:700;font-size:13px;box-shadow:0 1px 4px rgba(0,0,0,.35)}
+  .legend,.leaflet-container{color:var(--text)}
+  .legend{background:rgba(253,252,248,.95);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:12px;line-height:1.9}
+  .legend .lg{display:inline-block;vertical-align:middle;margin-right:4px}
+  .legend .vil{width:14px;height:14px;border-radius:50%;background:rgba(47,127,134,.35);border:2px solid #2F7F86}
+  .legend .farm{width:12px;height:12px;border-radius:50%;background:#9FB5AF;border:2px solid #16312C}
+  .legend .fac{width:18px;height:18px;line-height:15px;border-radius:4px;background:#5B4A8B;color:#fff;border:1.5px solid #fff;text-align:center;font-weight:700;font-size:11px}
+  .legend a{color:var(--teal)}
+  #ask{display:flex;gap:8px}#ask input{flex:1;padding:8px;border:1px solid var(--line);border-radius:8px}
+</style>
+</head>
+<body>
+<header>
+  <h1>냄새알림</h1><span class="sub">애월읍 광령리 · <span id="clock"></span> · <span id="wind"></span> · <span id="llm"></span></span>
+  <span class="sp"></span>
+  <a href="chat.html" target="_blank">주민 카톡(시뮬레이터)</a>
+  <a href="farm.html" target="_blank">농장주 화면</a>
+  <a href="stats.html">📊 통계</a>
+  <button onclick="demo('play')">▶ 시연: 아침 신고 12건</button>
+  <button onclick="demo('advance')">⏩ 3시간 뒤</button>
+  <button onclick="demo('later')">▶ 3시간 뒤 신고</button>
+  <button onclick="demo('reset')">↺ 초기화</button>
+</header>
+<main>
+  <div id="map"></div>
+  <div class="panel">
+    <div class="card"><h3>마을별 단계 (최근 1시간)</h3><div id="villages"></div></div>
+    <div class="card"><h3>Agent 행동 기록</h3><div id="actions" class="muted">아직 없음</div></div>
+    <div class="card"><h3>최근 신고</h3><div id="reports" class="muted">아직 없음</div></div>
+    <div class="card"><h3>실측 통계 <span class="muted">(악취조사 DB · 15배 초과율)</span></h3><div id="stats"></div>
+      <p class="muted">알아 둘 점: 실측은 분기 1회, 단위 확인 중. 원인 농장은 추정·표시하지 않습니다</p></div>
+  </div>
+</main>
+<script>
+const STAGE=['관찰','주의','경보','지속'];
+const map=L.map('map').setView([33.4450,126.4330],13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);
+const layer=L.layerGroup().addTo(map);        // 마을 신고 단계 (2초마다 갱신)
+const farmLayer=L.layerGroup().addTo(map);    // 광령리 실측 대상 농장
+const facLayer=L.layerGroup().addTo(map);     // 악취배출시설 (필수 데이터)
+L.control.layers(null,{'악취배출시설 (데이터허브)':facLayer,'광령리 실측 대상 농장':farmLayer},{collapsed:false,position:'topright'}).addTo(map);
+const legend=L.control({position:'bottomleft'});
+legend.onAdd=()=>{const d=L.DomUtil.create('div','legend');d.innerHTML=
+  `<b>지도 보기</b><br><span class="lg vil"></span> 마을 (색 = 신고 단계)<br><span class="lg farm"></span> 광령리 실측 대상 농장<br>
+   <span class="lg fac">3</span> 악취배출시설 (숫자 = 같은 주소의 시설 수)<br><span class="muted">위치: 지번 주소 → 브이월드 좌표</span><br>
+   <a href="#" id="fitAll">▸ 제주 전체 시설 보기</a> · <a href="#" id="fitHome">광령리로</a>`;return d};
+legend.addTo(map);
+let facBounds=null;
+document.addEventListener('click',e=>{
+  if(e.target.id==='fitAll'){e.preventDefault();facBounds&&map.fitBounds(facBounds.pad(0.1))}
+  if(e.target.id==='fitHome'){e.preventDefault();map.setView([33.4450,126.4330],13)}
+});
+fetch('/api/facilities').then(r=>r.json()).then(fc=>{
+  const pts=[];
+  fc.groups.forEach(g=>{
+    const size=Math.round(22+Math.sqrt(g.count)*6);
+    const icon=L.divIcon({className:'',html:`<div class="facm" style="width:${size}px;height:${size}px;line-height:${size}px">${g.count}</div>`,iconSize:[size,size],iconAnchor:[size/2,size/2]});
+    const lines=g.items.map(it=>`${it['사업장명']?esc(it['사업장명'])+' · ':''}${it['구분']} · 부지 ${Number(it['부지면적']).toLocaleString()}㎡${it['중복의심']?' · <i>'+esc(it['중복의심'])+'</i>':''}`);
+    L.marker([g.lat,g.lon],{icon}).bindTooltip(
+      `${g.emd} ${g.ri} · 악취배출시설 ${g.count}곳<br>악취관리지역 안 ${g.in_area}곳 · 부지 합계 ${Math.round(g.area_m2).toLocaleString()}㎡${g.dup?`<br>중복 의심 ${g.dup}곳`:''}<br><span style="opacity:.7">위치: ${g.precision}</span>`)
+     .bindPopup(`<b>${g.emd} ${g.ri}</b> · ${g.count}곳<div style="max-height:220px;overflow:auto;font-size:13px">${lines.join('<br>')}</div><div class="muted" style="margin-top:6px">${esc(fc.source)}${fc.show_names?'':'<br>사업장명은 표시하지 않습니다'}</div>`)
+     .addTo(facLayer);
+    pts.push([g.lat,g.lon]);
+  });
+  if(pts.length) facBounds=L.latLngBounds(pts);
+});
+const color=s=>['#8A9792','#2F7F86','#B85A1A','#7A2E0E'][s];
+const esc=t=>String(t).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+function speak(t){const u=new SpeechSynthesisUtterance(t);u.lang='ko-KR';speechSynthesis.cancel();speechSynthesis.speak(u)}
+async function approve(id){await fetch(`/api/complaint/${id}/approve`,{method:'POST'});load()}
+async function demo(k){
+  if(k==='play') await fetch('/api/demo/play',{method:'POST'});
+  if(k==='later') await fetch('/api/demo/play?name=gwangryeong_3h_later',{method:'POST'});
+  if(k==='advance') await fetch('/api/demo/advance?minutes=180',{method:'POST'});
+  if(k==='reset') await fetch('/api/demo/reset',{method:'POST'});
+  load();
+}
+let actCount=-1;
+async function load(){
+  const s=await (await fetch('/api/state')).json();
+  document.getElementById('clock').textContent=s.now.replace('T',' ');
+  document.getElementById('wind').textContent=`${s.wind.label} ${s.wind.speed}m/s (${s.wind.source})`;
+  layer.clearLayers();
+  if(!farmLayer.getLayers().length) s.farms.filter(f=>f.lat!=null).forEach(f=>L.circleMarker([f.lat,f.lon],{radius:8,color:'#16312C',weight:2,fillColor:'#9FB5AF',fillOpacity:1})
+    .bindTooltip(`광령리 실측 대상 농장<br>데이터허브 목록에 없음 (목록 갱신 필요)<br><span style="opacity:.7">위치: ${esc(f.coord_source)}</span>`).addTo(farmLayer));
+  s.villages.forEach(v=>L.circle([v.lat,v.lon],{radius:180+v.n*25,color:color(v.stage),fillOpacity:.35}).bindTooltip(`${v.village} · ${v.stage_name} · ${v.n}명`).addTo(layer));
+  document.getElementById('villages').innerHTML=s.villages.map(v=>
+    `<div class="row"><b>${v.village}</b><span>${v.n}명 · 평균 ${v.avg} · 1천명당 ${v.per_1000}</span><span class="badge s${v.stage}">${v.stage} ${v.stage_name}</span></div>`).join('');
+  const label={farm_alert:'농장 주의 알림',city_call:'대표 민원 전화',sms:'문자',complaint:'민원서 초안',farm_response:'농장 응답'};
+  document.getElementById('actions').innerHTML=s.actions.length?s.actions.map(a=>{
+    let body='';
+    if(a.type==='city_call') body=`${esc(a.payload.script)}<br><button onclick="speak(${JSON.stringify(a.payload.script).replace(/"/g,'&quot;')})">🔊 전화 내용 듣기</button>`;
+    else if(a.type==='sms') body=esc(a.payload.text);
+    else if(a.type==='farm_alert') body=`대상: 바람 위쪽 농장 ${a.payload.farm_count}곳 (농장 이름은 표시하지 않음)\n${esc(a.payload.message)}`;
+    else if(a.type==='complaint') body=esc(a.payload.text)+(a.status.includes('대기')?`<br><button onclick="approve(${a.id})">마을 대표 승인</button>`:'');
+    else if(a.type==='farm_response') body=`${a.payload.farm_id}: ${esc(a.payload.response)}`;
+    return `<div class="act ${a.type}"><b>${label[a.type]||a.type}</b> · ${a.village} · ${a.ts.slice(5,10).replace('-','/')} ${a.ts.slice(11,16)} · <span class="muted">${a.status}</span>\n${body}</div>`}).join(''):'아직 없음';
+  document.getElementById('reports').innerHTML=s.reports.length?s.reports.slice(0,15).map(r=>
+    `<div class="row"><span>“${esc(r.text)}”</span><span class="muted">${r.village} · 강도 ${r.intensity} · ${r.time} · ${r.parser}</span></div>`).join(''):'아직 없음';
+}
+fetch('/api/health').then(r=>r.json()).then(h=>document.getElementById('llm').textContent='해석: '+h.llm);
+fetch('/api/stats/overview').then(r=>r.json()).then(st=>{
+  document.getElementById('stats').innerHTML=Object.entries(st.over15_rate_by_year).map(([y,v])=>
+   `<div class="row"><span style="width:60px">${y}</span><div style="flex:1"><div class="bar" style="width:${v*4}%"></div></div><span>${v}%</span></div>`).join('');
+});
+load(); setInterval(load,2000);
+</script>
+</body>
+</html>

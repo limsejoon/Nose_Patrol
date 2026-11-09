@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>냄새알림 · 농장주 화면 (시뮬레이터)</title>
+<style>
+  body{margin:0;font-family:'Noto Sans KR',Arial,sans-serif;background:#e9ecef;display:flex;justify-content:center}
+  .phone{width:420px;min-height:100vh;background:#BFD0DD;display:flex;flex-direction:column}
+  .top{background:#A9BDCB;padding:12px 16px;font-weight:700;display:flex;gap:8px;align-items:center}
+  .top select{margin-left:auto}
+  #inbox{padding:14px;display:flex;flex-direction:column;gap:12px}
+  .msg{background:#fff;border-radius:16px;padding:12px 14px;font-size:15px;line-height:1.45}
+  .msg .t{font-size:12px;color:#667}
+  .btns{display:flex;gap:6px;margin-top:8px}
+  .btns button{flex:1;border:2px solid #2F7F86;background:#fff;border-radius:10px;padding:8px;font-weight:700;cursor:pointer}
+  .done{margin-top:8px;color:#2F7F86;font-weight:700}
+  .empty{color:#556;text-align:center;margin-top:40px}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="top">냄새알림 (농장주)<select id="farm"></select></div>
+  <div id="inbox"><div class="empty">알림이 오면 여기에 표시됩니다</div></div>
+</div>
+<script>
+const sel=document.getElementById('farm');
+async function respond(fid,aid,resp){
+  await fetch('/api/farm/respond',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({farm_id:fid,alert_id:aid,response:resp})});
+  load();
+}
+async function load(){
+  const s=await (await fetch('/api/state')).json();
+  if(!sel.options.length) s.farms.forEach(f=>sel.add(new Option(f.name,f.farm_id)));
+  const box=s.farm_inbox[sel.value]||[];
+  document.getElementById('inbox').innerHTML=box.length?box.slice().reverse().map(a=>`
+    <div class="msg"><div class="t">${a.ts.replace('T',' ')} · ${a.village}</div>${a.message}
+    ${a.response?`<div class="done">✔ ${a.response}</div>`:
+     `<div class="btns"><button onclick="respond('${sel.value}',${a.id},'저감시설 가동함')">저감시설 가동함</button>
+      <button onclick="respond('${sel.value}',${a.id},'확인했어요')">확인했어요</button></div>`}</div>`).join(''):
+    '<div class="empty">알림이 오면 여기에 표시됩니다<br>(동의한 농장만 · 신고자 정보는 오지 않음)</div>';
+}
+sel.onchange=load; load(); setInterval(load,2000);
+</script>
+</body>
+</html>

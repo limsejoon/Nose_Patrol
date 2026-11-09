@@ -1,0 +1,61 @@
+[
+ {
+  "user": "demo_1",
+  "text": "광령 2리 사는데 냄새 심하다"
+ },
+ {
+  "user": "demo_2",
+  "text": "창문을 못 열겠다 ㅠㅠ",
+  "place_village": "광령2리"
+ },
+ {
+  "user": "demo_3",
+  "text": "광령2리 돼지 냄새 때문에 숨을 못 쉬겠어",
+  "place_village": null
+ },
+ {
+  "user": "demo_4",
+  "text": "냄새 심해요",
+  "place_village": "광령2리"
+ },
+ {
+  "user": "demo_5",
+  "text": "애들 학교 가는데 냄새 너무 심함",
+  "place_village": "광령2리"
+ },
+ {
+  "user": "demo_6",
+  "text": "광령2리 빨래 널었는데 냄새 배겠다",
+  "place_village": null
+ },
+ {
+  "user": "demo_7",
+  "text": "아침 7시부터 냄새 엄청 나네",
+  "place_village": "광령2리"
+ },
+ {
+  "user": "demo_8",
+  "text": "또 냄새 난다 진짜 미치겠다",
+  "place_village": "광령2리"
+ },
+ {
+  "user": "demo_9",
+  "text": "광령2리 냄새 좀 나네",
+  "place_village": null
+ },
+ {
+  "user": "demo_10",
+  "text": "출근하는데 똥냄새 장난 아님",
+  "place_village": "광령2리"
+ },
+ {
+  "user": "demo_11",
+  "text": "냄새 때문에 머리 아파요 심해요",
+  "place_village": "광령2리"
+ },
+ {
+  "user": "demo_12",
+  "text": "광령2리 오늘 유난히 심하다 냄새",
+  "place_village": null
+ }
+]

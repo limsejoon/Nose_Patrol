@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>냄새알림 기획서</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#17312C; --ink2:#1F3D37; --orange:#BC5A1E; --orange2:#D97A2E; --amber:#F0A65A;
+  --teal:#2F7F86; --mint:#7FC8BE; --sage:#9FB5AF; --gray:#6B6B66;
+  --cream:#F3E6D8; --paper:#FBFAF6; --tealbg:#EAF1EF; --line:#D9D4CC; --grid:#DDDAD0;
+  --page:#2a2a2a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--page)}
+body{background:var(--page);font-family:"Noto Sans KR","Malgun Gothic",sans-serif;color:var(--ink);
+  padding:24px 16px 48px;display:flex;flex-direction:column;align-items:center;gap:24px;word-break:keep-all}
+.slide{width:100%;max-width:1456px;aspect-ratio:16/9;position:relative;overflow:hidden;
+  container-type:inline-size;background:var(--cream);box-shadow:0 6px 24px rgba(0,0,0,.35)}
+.in{position:absolute;inset:0;padding:2.9cqw 6.7cqw 3.6cqw;display:flex;flex-direction:column}
+.bar{position:absolute;top:0;left:0;right:0;height:.7cqw;background:var(--orange)}
+.t-teal .bar{background:var(--teal)}
+.t-teal{background:var(--tealbg)}
+.dark{background:var(--ink);color:#F4EFE6}
+.pill{align-self:flex-start;background:var(--orange);color:#fff;font-weight:700;font-size:1.1cqw;
+  padding:.55cqw 1.15cqw;border-radius:2cqw}
+.t-teal .pill{background:var(--teal)}
+.kicker{margin-top:1.5cqw;font-weight:700;font-size:1.3cqw;color:var(--orange);letter-spacing:.05em}
+.t-teal .kicker{color:var(--teal)}
+.dark .kicker{color:var(--mint)}
+h2{margin-top:1.2cqw;font-size:3.1cqw;line-height:1.3;font-weight:900;letter-spacing:-.02em}
+h2 em{font-style:normal;color:var(--orange)}
+.foot{position:absolute;left:6.7cqw;right:6.7cqw;bottom:2.4cqw;font-size:1.15cqw;color:var(--gray)}
+.dark .foot{color:#9BB0AA}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:1cqw;padding:1.6cqw 1.8cqw}
+.card h4{font-size:2.2cqw;font-weight:900;line-height:1.2}
+.card p{font-size:1.2cqw;color:#3E4A47;margin-top:.6cqw;line-height:1.55}
+.muted{color:var(--gray)}
+.grid{display:grid;gap:1.3cqw}
+table{border-collapse:collapse;width:100%;font-size:1.2cqw}
+th,td{border:1px solid #BFC4BF;padding:.75cqw 1cqw;text-align:left;vertical-align:top}
+th{background:#D5DCD8;font-weight:700}
+td{background:rgba(255,255,255,.35)}
+.fixed{background:#FFF0DF;border-radius:.3cqw;padding:0 .3cqw;box-shadow:inset 0 -.25cqw 0 var(--amber)}
+.dark .fixed,.s12 .fixed,.dcard .fixed{background:rgba(240,166,90,.22);color:#fff;box-shadow:inset 0 -.2cqw 0 var(--amber)}
+
+/* 1 cover */
+.cover .in{padding:6.7cqw 6.7cqw}
+.cover .top{font-weight:700;font-size:1.4cqw;color:var(--amber)}
+.cover h1{margin-top:9cqw;font-size:8.6cqw;font-weight:900;line-height:1;letter-spacing:-.03em}
+.cover .sub{margin-top:2.2cqw;font-size:2.7cqw;font-weight:500;line-height:1.45}
+.cover .meta{position:absolute;left:6.7cqw;right:6.7cqw;bottom:7cqw;display:flex;justify-content:space-between;
+  font-size:1.45cqw;line-height:1.75;color:#D7DED9}
+.cover .meta div:last-child{text-align:right}
+
+/* 2 */
+.hero{margin-top:2.2cqw;background:var(--ink);color:#F4EFE6;border-radius:1cqw;padding:2cqw 2.3cqw;
+  display:grid;grid-template-columns:1fr auto auto;gap:2.6cqw;align-items:center}
+.hero .lead{font-size:2.5cqw;font-weight:900;line-height:1.4}
+.hero .lead span{color:var(--amber)}
+.hero .stat{border-left:1px solid #4A6660;padding-left:2cqw}
+.hero .stat b{display:block;font-size:3.2cqw;font-weight:900}
+.hero .stat small{font-size:1.15cqw;color:#C9D3CF}
+.hero .stat.hot b{color:var(--amber)}
+.sub2{margin-top:1.6cqw;font-size:2.4cqw;font-weight:900}
+.hours{display:grid;grid-template-columns:repeat(24,1fr);gap:.2cqw;margin-top:.8cqw}
+.hours i{height:1.9cqw;background:#DEDACB;border-radius:.2cqw}
+.hours i.on{background:var(--orange2)}
+.hlab{display:flex;justify-content:space-between;font-size:1.15cqw;color:var(--gray);margin-top:.5cqw}
+
+/* 3 */
+.s3{margin-top:1.8cqw;display:grid;grid-template-columns:28% 1fr;gap:2.6cqw;flex:1;margin-bottom:5cqw}
+.panel{background:var(--ink);color:#F4EFE6;border-radius:1cqw;padding:2.2cqw 1.9cqw}
+.panel .lab{color:var(--amber);font-weight:700;font-size:1.2cqw}
+.panel .per{font-size:1.15cqw;color:#C9D3CF;margin-top:.8cqw;padding-bottom:1cqw;border-bottom:1px solid #3E5A54}
+.panel .row{padding:1.1cqw 0;border-bottom:1px solid #3E5A54}
+.panel .row:last-child{border:0}
+.panel .row b{font-size:2.4cqw;font-weight:900;display:block}
+.panel .row small{font-size:1.2cqw;color:#D7DED9}
+.big68{display:flex;align-items:center;gap:1.6cqw;border-left:.45cqw solid var(--orange);padding-left:1.6cqw}
+.big68 b{font-size:7.2cqw;font-weight:900;color:var(--orange);line-height:1}
+.big68 span{font-size:1.65cqw;font-weight:700;line-height:1.45}
+
+/* 4 */
+.s4{display:grid;grid-template-columns:1fr 30%;gap:3.4cqw;margin-top:1.6cqw;flex:1;margin-bottom:6cqw}
+.chart-t{font-size:1.25cqw;font-weight:700;color:#3E4A47}
+.chart{display:flex;align-items:flex-end;gap:2.2cqw;height:24cqw;border-bottom:2px solid #9AA39F;margin-top:1.6cqw;padding:0 1.1cqw}
+.chart .c{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.chart .c span{font-size:1.2cqw;color:#3E4A47;margin-bottom:.4cqw}
+.chart .c i{width:100%;background:var(--sage);border-radius:.3cqw .3cqw 0 0;display:block}
+.chart .c.hi span{color:var(--orange);font-weight:700}
+.chart .c.hi i{background:var(--orange2)}
+.xl{display:flex;gap:2.2cqw;padding:0 1.1cqw;margin-top:.6cqw}
+.xl span{flex:1;text-align:center;font-size:1.2cqw;color:#3E4A47}
+.xl span.hi{color:var(--orange);font-weight:700}
+.kp{border-left:.35cqw solid var(--teal);padding-left:1.6cqw;margin-bottom:2.2cqw}
+.kp.o{border-color:var(--orange2)}
+.kp b{font-size:3.7cqw;font-weight:900;display:block;line-height:1.15}
+.kp small{font-size:1.25cqw;color:#3E4A47;line-height:1.5;display:block;margin-top:.3cqw}
+
+/* 5 */
+.flow{display:grid;grid-template-columns:1fr 3.4cqw 1fr 3.4cqw 1fr;align-items:center;margin-top:3cqw}
+.flow .card{padding:2.2cqw}
+.flow .card.mid{border:2px solid var(--orange2)}
+.flow .who{font-size:1.2cqw;font-weight:700;color:var(--teal)}
+.flow .mid .who{color:var(--orange)}
+.flow h4{margin-top:.9cqw;font-size:2.2cqw}
+.arrow{color:var(--orange2);font-size:2.8cqw;text-align:center}
+.goal{margin-top:3cqw;font-size:1.4cqw}
+
+/* 6 */
+.s6{display:grid;grid-template-columns:44% 1fr;gap:3cqw;margin-top:2cqw}
+.chat{background:#BFD0DB;border-radius:1.2cqw;padding:1.8cqw 1.9cqw;display:flex;flex-direction:column;gap:1cqw}
+.chat .lb{text-align:center;font-weight:700;font-size:1.2cqw;color:#3E4A47}
+.bub{max-width:80%;padding:.9cqw 1.2cqw;border-radius:1cqw;font-size:1.2cqw;line-height:1.5}
+.bub.me{align-self:flex-end;background:#F5DD74}
+.bub.bot{align-self:flex-start;background:var(--paper)}
+.s6 h5{font-size:1.35cqw;font-weight:700;color:#3E4A47;margin-bottom:1cqw}
+.s6 ul{margin-top:1.6cqw;padding-left:1.6cqw;font-size:1.35cqw;line-height:1.9;color:#3E4A47}
+
+/* 7 */
+.stages{display:grid;grid-template-columns:1fr 2.6cqw 1fr 2.6cqw 1fr 2.6cqw 1fr;align-items:stretch;margin-top:1.5cqw}
+.stages .card{padding:1.5cqw 1.6cqw}
+.stages .lv{font-size:1.15cqw;font-weight:700;color:var(--gray)}
+.stages .lv.t{color:var(--teal)} .stages .lv.o{color:var(--orange)}
+.stages h4{font-size:2cqw;margin-top:.8cqw}
+.stages .alarm{background:var(--orange);border-color:var(--orange);color:#fff}
+.stages .alarm .lv,.stages .alarm p{color:#fff}
+.stages .ar{align-self:center;text-align:center;color:#C9C2B6;font-size:1.8cqw}
+.callbox{margin-top:1.3cqw;background:var(--ink);border-radius:1cqw;padding:1.7cqw 2cqw;display:grid;grid-template-columns:30% 1fr;gap:2cqw;align-items:center;color:#F4EFE6}
+.callbox .l b{font-size:2.5cqw;font-weight:900;line-height:1.3;display:block}
+.callbox .l b span{color:var(--amber)}
+.callbox .l small{font-size:1.1cqw;color:#C9D3CF}
+.callbox .r{background:var(--paper);color:var(--ink);border-radius:.8cqw;padding:1.2cqw 1.6cqw}
+.callbox .r h6{font-size:1.2cqw;color:var(--orange);font-weight:700}
+.callbox .r p{font-size:1.25cqw;line-height:1.6;margin-top:.4cqw}
+.note7{margin-top:1.2cqw;font-size:1.1cqw;color:#3E4A47}
+
+/* 8 */
+.cols3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.7cqw;margin-top:2.3cqw}
+.dcard{background:var(--ink2);border-radius:1cqw;border-top:.35cqw solid var(--mint);padding:2cqw 1.9cqw;min-height:20cqw}
+.dcard.o{border-color:var(--amber)} .dcard.g{border-color:#8A9590}
+.dcard h4{font-size:2cqw;font-weight:900}
+.dcard ul{margin-top:1.3cqw;padding-left:1.4cqw;font-size:1.3cqw;line-height:1.95;color:#E4EAE7}
+
+/* 9 */
+.s9{display:grid;grid-template-columns:27% 1fr;gap:2.6cqw;margin-top:1.6cqw}
+.s9 .side{display:flex;flex-direction:column;gap:1cqw}
+.s9 .side .card.d{background:var(--ink);color:#F4EFE6;border-color:var(--ink)}
+.s9 .side h5{font-size:1.2cqw;font-weight:700;color:var(--teal)}
+.s9 .side .d h5{color:var(--amber)}
+.s9 .side p{font-size:1.3cqw;line-height:1.6;margin-top:.5cqw}
+.s9 .side .d p{color:#F4EFE6}
+.tools{display:grid;grid-template-columns:1fr 1fr;gap:.9cqw 1cqw}
+.tools .card{padding:.75cqw 1.3cqw}
+.tools b{font-size:1.35cqw;font-weight:700}
+.tools p{font-size:1.2cqw;margin-top:.2cqw}
+
+/* 11 */
+.s11{display:grid;grid-template-columns:45% 1fr;gap:1.4cqw;margin-top:1.8cqw}
+.map{background:var(--ink2);border-radius:1cqw;position:relative;height:29.5cqw;color:#F4EFE6;overflow:hidden}
+.map .hd{position:absolute;left:1.5cqw;top:1.4cqw;font-weight:700;font-size:1.3cqw}
+.map .ft{position:absolute;left:1.5cqw;bottom:1.4cqw;font-size:1.15cqw;color:#9BB0AA}
+.map i{position:absolute;border-radius:50%;display:block}
+.map i.f{width:2.1cqw;height:2.1cqw;background:var(--sage)}
+.map i.r{width:1.25cqw;height:1.25cqw;background:#F0A65A}
+.map .lb{position:absolute;font-size:1.25cqw}
+.badge{display:inline-block;background:var(--orange);color:#fff;font-weight:700;font-size:1.3cqw;padding:.45cqw 1.1cqw;border-radius:2cqw}
+.rec{border:2px solid var(--orange2);margin-top:1cqw}
+.rec p{color:var(--ink);font-size:1.3cqw;margin-top:.5cqw}
+.cand{margin-top:1cqw}
+.cand .row{display:flex;align-items:center;gap:1.4cqw;margin-top:.8cqw;font-size:1.25cqw}
+.cand .row span{width:13cqw}
+.cand .row i{height:1.1cqw;border-radius:.2cqw;display:block}
+
+/* 12 */
+.s12{margin-top:1.2cqw;background:var(--ink);color:#F4EFE6;border-radius:1cqw;padding:1.8cqw 2cqw;display:grid;grid-template-columns:36% 1fr;gap:2cqw}
+.s12 .lab{color:var(--amber);font-weight:700;font-size:1.2cqw}
+.s12 h3{font-size:2.3cqw;font-weight:900;line-height:1.25;margin-top:.8cqw}
+.s12 .m{font-size:1.3cqw;color:#D7DED9;margin-top:.8cqw;line-height:1.6}
+.s12 .pre{font-size:1.1cqw;color:#B8C6C1;margin-top:1cqw;line-height:1.6}
+.uses{display:grid;grid-template-columns:1fr 1fr;gap:.9cqw}
+.use{background:var(--ink2);border-radius:.8cqw;padding:1.1cqw 1.3cqw}
+.use b{font-size:1.15cqw;font-weight:700}
+.use p{font-size:1.05cqw;color:#D7DED9;margin-top:.35cqw;line-height:1.5}
+.s12 .warn{grid-column:1/-1;color:var(--amber);font-size:1.15cqw;line-height:1.5}
+.with{margin-top:1cqw;font-size:1.2cqw;font-weight:700;color:#3E4A47}
+.data5{display:grid;grid-template-columns:repeat(5,1fr);gap:.9cqw;margin-top:.7cqw}
+.data5 .card{padding:.7cqw 1.1cqw}
+.data5 b{font-size:1.2cqw}
+.data5 p{font-size:1.05cqw;margin-top:.15cqw;line-height:1.45}
+.terms{margin-top:.8cqw;font-size:1.1cqw;color:#3E4A47}
+
+/* 13 */
+.s13{display:grid;grid-template-columns:1fr 32%;gap:2.6cqw;margin-top:2cqw}
+.env h5{font-size:1.5cqw;font-weight:900;margin-top:1.2cqw}
+.env h5:first-child{margin-top:0}
+.env p{font-size:1.25cqw;margin-top:.5cqw}
+
+/* 14 */
+.c4{display:grid;grid-template-columns:1fr 1fr;gap:1.3cqw;margin-top:2.2cqw}
+.c4 h4{font-size:1.85cqw}
+.c4 p{font-size:1.3cqw}
+
+/* 15 */
+.end h1{margin-top:12cqw;font-size:5.6cqw;font-weight:900;line-height:1.3;letter-spacing:-.02em}
+.end .kicker{color:var(--amber)}
+.steps{position:absolute;left:6.7cqw;right:6.7cqw;bottom:7cqw;display:grid;grid-template-columns:repeat(3,1fr);gap:1.7cqw}
+.steps div{border-top:.25cqw solid var(--amber);padding-top:1.6cqw}
+.steps div:nth-child(2){border-color:var(--mint)} .steps div:nth-child(3){border-color:#8A9590}
+.steps b{font-size:1.75cqw;font-weight:900;display:block}
+.steps small{font-size:1.25cqw;color:#C9D3CF;display:block;margin-top:.5cqw}
+
+@media print{
+  @page{size:1456px 819px;margin:0}
+  html,body{background:none;padding:0;gap:0;display:block}
+  .slide{box-shadow:none;width:1456px;max-width:none;break-after:page;page-break-after:always}
+  .fixed{background:none;box-shadow:none}
+  .dark .fixed{background:none}
+}
+</style>
+</head>
+<body>
+
+<!-- 1 표지 -->
+<section class="slide dark cover"><div class="in">
+  <div class="top">제주 AI·빅데이터 활용 AI Agent 개발 챌린지 · AI Agent 기획서</div>
+  <h1>냄새알림</h1>
+  <div class="sub">주민의 카톡 한 줄을<br>근거 있는 행동으로 바꾸는 악취 대응 AI Agent</div>
+  <div class="meta">
+    <div>시범 지역 · 제주시 애월읍 광령리<br>필수 데이터 · 제주데이터허브 「제주특별자치도_악취배출시설현황」</div>
+    <div>[팀명]<br>2026. 11.</div>
+  </div>
+</div></section>
+
+<!-- 2 문제 -->
+<section class="slide"><div class="bar"></div><div class="in">
+  <div class="pill">PART 1 · 현장 상황</div>
+  <div class="kicker">01 문제 · 마을 옆 양돈장, 그리고 측정의 구멍</div>
+  <div class="hero">
+    <div class="lead">제주에는 악취를 내는 양돈장이 있고,<br><span>그 바로 옆에 마을이 있다</span></div>
+    <div class="stat"><b>약 180곳</b><small>악취관리센터가 관리하는 농가</small></div>
+    <div class="stat hot"><b>하루 1.3건</b><small>광령리 한 마을의 악취 민원</small></div>
+  </div>
+  <div class="sub2">관리는 하고 있지만, 측정에는 구멍이 많다</div>
+  <div class="grid" style="grid-template-columns:repeat(3,1fr);margin-top:1.4cqw">
+    <div class="card"><h4>365일 중 4일</h4><p>농장마다 정기 측정은 분기에 하루뿐</p></div>
+    <div class="card" style="border-color:var(--orange2)"><h4>24시간 중 8시간</h4><p>새벽은 잰 적이 없고, 저녁 8시 이후는 2025년부터 없다</p></div>
+    <div class="card"><h4>하루 최대 3번</h4><p>주민참여 모니터링도 지정된 장소에서만</p></div>
+  </div>
+  <div style="margin-top:1.8cqw;font-size:1.2cqw;font-weight:700;color:#3E4A47">정기 측정이 닿는 시간 (주황 = 측정 시간대, 오전 8~11 · 오후 2~5 · 저녁 6~8)</div>
+  <div class="hours" id="hours"></div>
+  <div class="hlab"><span>0시</span><span>6시</span><span>12시</span><span>18시</span><span>24시</span></div>
+  <p style="margin-top:1.6cqw;font-size:1.25cqw;color:#3E4A47"><b>센서도 사각지대가 있다.</b> 센서는 주로 암모니아·황화수소를 재지만, 제주 양돈장 악취 기여도의 89.3~96.6%는 휘발성지방산이다(제주대 연구).</p>
+  <div class="foot">출처: 제주악취관리센터 홈페이지·악취조사 DB(2020.1분기~2026.2분기, 1,191건), 제주시 정보공개(광령리 민원 1,778건, 2023.1~2026.9) · 02</div>
+</div></section>
+
+<!-- 3 정보공개 -->
+<section class="slide"><div class="bar"></div><div class="in">
+  <div class="pill">PART 1 · 현장 상황</div>
+  <div class="kicker">02 정보공개청구로 확인한 사실</div>
+  <h2>맞춰 보니, 측정과 민원이 서로 만나지 않았다</h2>
+  <div class="s3">
+    <div class="panel">
+      <div class="lab">제주시에 직접 청구한 자료</div>
+      <div class="per">2023.1.1~2026.9.30 · 애월읍 광령리·고성리</div>
+      <div class="row"><b>1,778건</b><small>광령리 악취 민원 접수</small></div>
+      <div class="row"><b>673건</b><small>광령리·고성리 지도점검</small></div>
+      <div class="row"><b>4건</b><small>기준 초과 행정처분</small></div>
+    </div>
+    <div>
+      <div class="big68"><b>68%</b><span>민원이<br>정기 측정 시간 밖에<br>접수됐다</span></div>
+      <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:1.6cqw">
+        <div class="card"><h4>596일 중 9일</h4><p>민원 있는 날 중 정기 측정과 겹친 날</p></div>
+        <div class="card"><h4>0일</h4><p>민원이 가장 많은 8월, 금·토·일의 정기 측정</p></div>
+        <div class="card"><h4>210일 중 13일</h4><p>점검한 날 중 실제 포집·분석까지 간 날</p></div>
+        <div class="card"><h4>1건</h4><p>2023년 이후 점검분의 기준 초과 처분</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot">민원 시각 = 접수 시각, 건수 ≠ 피해 가구 수 · 출처: 제주시 정보공개 자료, 악취조사 DB · 03</div>
+</div></section>
+
+<!-- 4 근거 데이터 -->
+<section class="slide"><div class="bar"></div><div class="in">
+  <div class="pill">PART 1 · 현장 상황</div>
+  <div class="kicker">03 근거 데이터 · 애월읍 광령리</div>
+  <h2>광령리 악취, 2023년부터 다시 나빠지고 있다</h2>
+  <div class="s4">
+    <div>
+      <div class="chart-t">부지경계 15배 초과 비율 (연도별, 4개 농장 실측)</div>
+      <div class="chart" id="chart"></div>
+      <div class="xl" id="xl"></div>
+    </div>
+    <div style="padding-top:.6cqw">
+      <div class="kp o"><b>18.8%</b><small>2024년 측정 5번 중 1번꼴로 기준 초과</small></div>
+      <div class="kp"><b>오전 15.4%</b><small>야간(20~22시) 2.5%보다 6배. 광령리는 낮에 난다</small></div>
+      <div class="kp"><b>최대 300배</b><small>2023.3.6 오전, 한 농장 부지경계</small></div>
+    </div>
+  </div>
+  <div class="foot">출처: 제주악취관리센터 악취조사 DB, 광령리 A구역 4개 농장 391건(2020.2~2026.6). 값은 복합악취 희석배수, 기타지역 부지경계 15배 기준 [단위 확인 중] · 04</div>
+</div></section>
+
+<!-- 5 서비스 제안 -->
+<section class="slide t-teal"><div class="bar"></div><div class="in">
+  <div class="pill">PART 2 · 냄새알림 AI Agent</div>
+  <div class="kicker">04 서비스 제안 · 구현 목표</div>
+  <h2>카톡 한 줄이 들어오면,<br>Agent가 판단하고 대신 움직인다</h2>
+  <div class="flow">
+    <div class="card"><div class="who">주민</div><h4>카톡으로 신고</h4><p>평소 말 그대로. 동네는 처음 한 번만, 양식도 앱 설치도 없다.</p></div>
+    <div class="arrow">➜</div>
+    <div class="card mid"><div class="who">AI Agent</div><h4>묶고, 판단하고, 기록</h4><p>같은 마을 신고를 사건으로 묶고 단계를 정한다. <span class="fixed">마을·시간대별로 신고와 처리 경과를 통계로 남긴다. 원인 농장은 추정·표시하지 않는다.</span></p></div>
+    <div class="arrow">➜</div>
+    <div class="card"><div class="who">행동</div><h4>대신 움직인다</h4><p><b>시청에 대표 민원 전화 1통</b>, 농장에 주의 알림, 주민에게 처리 결과.</p></div>
+  </div>
+  <p class="goal"><b>구현 목표</b> · 주민 신고를 근거 있는 행정 행동으로 바꾸고, 센터 방문자(행정·사업자)가 말로 묻고 보고서를 받게 한다.</p>
+  <div class="foot">냄새알림 · AI Agent 기획서 · 05</div>
+</div></section>
+
+<!-- 6 자연어 신고 -->
+<section class="slide t-teal"><div class="bar"></div><div class="in">
+  <div class="pill">PART 2 · 냄새알림 AI Agent</div>
+  <div class="kicker">05 핵심 원칙 · 자연어 신고</div>
+  <h2>신고는 반드시 카톡으로, 평소 말 그대로</h2>
+  <div class="s6">
+    <div class="chat">
+      <div class="lb">처음 신고할 때 (한 번만)</div>
+      <div class="bub me">냄새 심하다</div>
+      <div class="bub bot">처음이시죠? 어느 동네 사세요? 한 번만 알려주시면 기억할게요.</div>
+      <div class="bub me">광령 2리</div>
+      <div class="lb">다음부터는</div>
+      <div class="bub me">오늘 아침부터 냄새 진짜 심하다</div>
+      <div class="bub bot">광령 2리 · 꽤 심함(4단계)으로 접수했어요. 다른 곳이면 [현재 위치 보내기]</div>
+    </div>
+    <div>
+      <h5>Agent가 말에서 뽑아낸 값</h5>
+      <table>
+        <tr><th style="width:30%">항목</th><th>값</th></tr>
+        <tr><td>누구</td><td>익명 ID (같은 사람인지만 구분)</td></tr>
+        <tr><td>위치</td><td>광령 2리 (등록된 동네, 자동)</td></tr>
+        <tr><td>시각</td><td>오늘 아침부터</td></tr>
+        <tr><td>강도</td><td>4 / 5 (“진짜 심하다”)</td></tr>
+        <tr><td>원문</td><td>함께 저장, 언제든 재확인</td></tr>
+      </table>
+      <ul><li>동네는 처음 한 번만, 이후 자동</li><li>집이 아니면 [현재 위치 보내기]</li><li>양식·필수 버튼·앱 설치 없음</li></ul>
+    </div>
+  </div>
+  <div class="foot">기존 주민참여형 모니터링(지정 요원 · 정해진 장소 · 하루 최대 3회 앱 입력)과 달리, 누구나 아무 때나 평소 말로 · 06</div>
+</div></section>
+
+<!-- 7 Workflow -->
+<section class="slide t-teal"><div class="bar"></div><div class="in">
+  <div class="pill">PART 2 · 냄새알림 AI Agent</div>
+  <div class="kicker">06 Agent 판단 · Workflow</div>
+  <h2>신고가 10명을 넘으면,<br><em>Agent가 주민 대표로 민원 전화를 건다</em></h2>
+  <div class="stages">
+    <div class="card"><div class="lv">0 관찰</div><h4>1~3명</h4><p>기록하고 신고자에게 접수 답장</p></div>
+    <div class="ar">➜</div>
+    <div class="card"><div class="lv t">1 주의</div><h4>4~9명</h4><p>또는 평균 강도 4 이상. 바람 위쪽 농장에 주의 알림</p></div>
+    <div class="ar">➜</div>
+    <div class="card alarm"><div class="lv">2 경보 · 대표 민원 전화</div><h4>10명 이상</h4><p>Agent가 시청 담당부서에 <b>민원 전화 1통</b> + 같은 내용 문자</p></div>
+    <div class="ar">➜</div>
+    <div class="card"><div class="lv o">3 지속 · 사람 승인</div><h4>경보 후 3시간+</h4><p>근거 붙은 민원서 작성 → 마을 대표 승인 → 제출</p></div>
+  </div>
+  <div class="callbox">
+    <div class="l"><b>100명이 신고해도<br><span>민원 전화는 1통</span></b><small>같은 사건은 3시간 동안 다시 걸지 않는다</small></div>
+    <div class="r"><h6>Agent가 거는 민원 전화 (예시)</h6>
+      <p>“냄새알림입니다. 애월읍 광령 2리에서 최근 1시간 동안 주민 12명이 악취를 신고했습니다. <span class="fixed">평균 강도는 5점 중 3.7점, 남풍 4미터입니다. 현장 확인을 요청드립니다.</span> 같은 내용을 문자로 보내 드립니다.”</p></div>
+  </div>
+  <p class="note7">판단 단위: 같은 마을 · 최근 1시간 · 인구 대비 보정. 기준값(3명·10명·3시간)은 설정에서 변경. 모든 단계에서 신고자에게 처리 상황을 카톡으로 알린다.</p>
+  <div class="foot">냄새알림 · AI Agent 기획서 · 07</div>
+</div></section>
+
+<!-- 8 자율 수행 범위 -->
+<section class="slide dark"><div class="bar" style="background:var(--teal)"></div><div class="in">
+  <div class="pill" style="background:var(--teal)">PART 2 · 냄새알림 AI Agent</div>
+  <div class="kicker">07 판단 및 자율 수행 범위</div>
+  <h2>판단은 Agent가, 되돌릴 수 없는 일은 사람이</h2>
+  <div class="cols3">
+    <div class="dcard"><h4>Agent가 스스로</h4><ul><li>신고 해석·되묻기</li><li>사건 묶기·단계 판단</li><li><span class="fixed">지역·시간별 신고·처리 통계</span></li><li>농장 주의 알림</li><li>대표 민원 전화·문자(사전 등록 번호)</li><li>통계·보고서 작성</li></ul></div>
+    <div class="dcard o"><h4>사람 승인 후</h4><ul><li>공식 민원 제출(마을 대표)</li><li>판단 기준값 변경(담당자)</li><li>농장 알림 대상 등록(농장 동의)</li></ul></div>
+    <div class="dcard g"><h4>하지 않음</h4><ul><li>특정 농장을 원인으로 단정</li><li><span class="fixed">원인 농장 추정·표시</span></li><li>신고자 정보를 농장에 전달</li><li>센터 원본 데이터 외부 LLM 전송</li><li>같은 사건 반복 전화</li></ul></div>
+  </div>
+  <div class="foot">냄새알림 · AI Agent 기획서 · 08</div>
+</div></section>
+
+<!-- 9 개발 구성 -->
+<section class="slide t-teal"><div class="bar"></div><div class="in">
+  <div class="pill">PART 2 · 냄새알림 AI Agent</div>
+  <div class="kicker">08 Agent 개발 구성 · 모델 · Tool/API</div>
+  <h2>LLM은 판단하고, 숫자는 도구가 계산한다</h2>
+  <div class="s9">
+    <div class="side">
+      <div class="card d"><h5>역할</h5><p>주민·행정·농장 사이의 악취 대응 조정자</p></div>
+      <div class="card"><h5>사용 모델</h5><p>[LLM 모델명] 외부 API. 센터가 비용을 부담하므로 소형 모델 우선, 호출 횟수 최소화</p></div>
+      <div class="card"><h5>원칙</h5><p>LLM은 숫자를 만들지 않는다. 집계·추정은 도구가 하고, LLM은 해석과 문장을 맡는다</p></div>
+    </div>
+    <div class="tools">
+      <div class="card"><b>parse_report</b><p>말 → 위치·시각·강도</p></div>
+      <div class="card"><b>geocode_place</b><p>“광령 2리” → 좌표</p></div>
+      <div class="card"><b>cluster_reports</b><p>사건 묶기, 인구 보정</p></div>
+      <div class="card"><b>filter_suspicious</b><p>중복·허위 가중치</p></div>
+      <div class="card"><b>get_wind</b><p>풍향·풍속(기상청)</p></div>
+      <div class="card"><b>rank_sources</b><p>주의 알림 보낼 바람 위쪽 농장 <span class="fixed">(내부용, 화면·문안 표시 안 함)</span></p></div>
+      <div class="card"><b>get_farm_history</b><p>실측·민원 이력</p></div>
+      <div class="card"><b>report_stats · query_stats</b><p><span class="fixed">지역·시간별 신고·처리 통계</span>, 말로 묻는 통계</p></div>
+      <div class="card"><b>draft_alert · complaint</b><p>경보문·민원서 작성</p></div>
+      <div class="card"><b>send · make_report</b><p>발송 기록·보고서 PDF</p></div>
+    </div>
+  </div>
+  <div class="foot">냄새알림 · AI Agent 기획서 · 09</div>
+</div></section>
+
+<!-- 10 기능 -->
+<section class="slide t-teal"><div class="bar"></div><div class="in">
+  <div class="pill">PART 2 · 냄새알림 AI Agent</div>
+  <div class="kicker">09 핵심 기능 · 구현 범위</div>
+  <h2>네 사용자, 열 가지 기능</h2>
+  <table style="margin-top:1.8cqw">
+    <tr><th style="width:6%">ID</th><th style="width:26%">기능</th><th style="width:13%">사용자</th><th>내용</th><th style="width:11%">구현</th></tr>
+    <tr><td>F1</td><td>자연어 신고 수집</td><td>주민</td><td>카톡 문장 → 값 추출, 동네 1회 등록</td><td>P0 동작</td></tr>
+    <tr><td>F2</td><td>단계별 판단·경보</td><td>행정</td><td>관찰 · 주의 · 경보 · 지속, 경보 시 대표 민원 전화 1통</td><td>P0 동작</td></tr>
+    <tr><td>F3</td><td><span class="fixed">신고·처리 통계</span></td><td>행정</td><td><span class="fixed">마을 × 시간대 신고 수, 날짜별 추이, 사건 단계, 사건별 처리 경과·걸린 시간</span></td><td>P0 동작</td></tr>
+    <tr><td>F4</td><td>말로 묻는 통계</td><td>행정</td><td>질문 → 집계·차트·보고서</td><td>P0 동작</td></tr>
+    <tr><td>F5</td><td>허위·중복 필터</td><td>행정</td><td>반복 신고, 풍향상 불가능한 위치</td><td>P1</td></tr>
+    <tr><td>F6</td><td>농장 주의 알림</td><td>농장</td><td>후보 전체에 주의, 조치 응답·효과 측정</td><td>P1</td></tr>
+    <tr><td>F7</td><td>처리 결과 피드백</td><td>주민</td><td>접수·전달·조치 상황 카톡 안내</td><td>P1</td></tr>
+    <tr><td>F8</td><td>입지 악취 리스크</td><td>사업자</td><td>주변 농장·풍향 빈도·이력 보고서</td><td>P1</td></tr>
+    <tr><td>F9</td><td>농장 개선 성적표</td><td>농장·행정</td><td>연도별 초과율 추이, 우수 농가 표시</td><td>P1</td></tr>
+    <tr><td>F10</td><td>센서 연계 슬롯</td><td>행정</td><td>센서 정상 + 신고 다발 → 사각지대 의심</td><td>P2 구조</td></tr>
+  </table>
+  <div class="foot">P0 실제 동작 · P1 동작 또는 가상 데이터 시연 · P2 구조 제시 · 10</div>
+</div></section>
+
+<!-- 11 UI -->
+<section class="slide t-teal"><div class="bar"></div><div class="in">
+  <div class="pill">PART 2 · 냄새알림 AI Agent</div>
+  <div class="kicker">10 UI 구성 · 센터 PC 화면</div>
+  <h2>지도에서 보고, Agent의 판단을 읽는다</h2>
+  <div class="s11">
+    <div class="map">
+      <div class="hd">애월읍 광령리 · 오늘 07:40</div>
+      <i class="r" style="left:30%;top:20%"></i><i class="r" style="left:41%;top:17%"></i><i class="r" style="left:36%;top:27%"></i>
+      <i class="r" style="left:48%;top:24%"></i><i class="r" style="left:44%;top:33%"></i>
+      <div class="lb" style="left:55%;top:21%;color:var(--amber)">주민 신고 지점 (마을)</div>
+      <svg style="position:absolute;left:40%;top:41%;width:5%;height:24%" viewBox="0 0 100 100" preserveAspectRatio="none"><line x1="50" y1="98" x2="50" y2="12" stroke="#F4EFE6" stroke-width="3" vector-effect="non-scaling-stroke"/><polygon points="50,0 22,22 78,22" fill="#F4EFE6"/></svg>
+      <div class="lb" style="left:47%;top:50%;color:var(--amber)">남풍 4m/s ↑</div>
+      <i class="f" style="left:36%;top:70%"></i><i class="f" style="left:42%;top:73%"></i><i class="f" style="left:39%;top:79%"></i>
+      <div class="lb" style="left:52%;top:74%">축산시설 (마을 남쪽 2~4km)</div>
+      <div class="ft">2D 지도 (Chrome/Edge, 별도 그래픽 가속 필요 없음)</div>
+    </div>
+    <div>
+      <div><span class="badge">2 경보</span> <span style="font-size:1.3cqw;margin-left:.6cqw">신고 12건 · 평균 강도 4.1</span></div>
+      <div class="card rec"><b style="font-size:1.4cqw">Agent 권장 조치</b>
+        <p><b>[권장]</b> 담당부서 경보 · 신고 12건, <span class="fixed">남풍</span></p>
+        <p><b>[보완]</b> 오전 추가 측정 요청 · 오전 초과율 15.4%</p></div>
+      <div class="card cand"><b style="font-size:1.4cqw" class="fixed">처리 경과 (첫 신고 후)</b>
+        <div class="row"><span>07:12 첫 신고</span></div>
+        <div class="row"><span>+11분 농장 주의 알림</span><i style="width:8%;background:var(--teal)"></i></div>
+        <div class="row"><span>+28분 대표 민원 전화</span><i style="width:20%;background:var(--orange2)"></i></div>
+      </div>
+      <p class="muted" style="font-size:1.25cqw;margin-top:1cqw">▸ <span class="fixed">통계 화면: 마을 × 시간대 신고 수 · 사건별 처리 기록</span></p>
+    </div>
+  </div>
+  <div class="foot">화면 예시(가상 데이터) · 1920×1080 · Chrome/Edge · 로컬 서버 + 브라우저 · 11</div>
+</div></section>
+
+<!-- 12 데이터 -->
+<section class="slide t-teal"><div class="bar"></div><div class="in">
+  <div class="pill">PART 2 · 냄새알림 AI Agent</div>
+  <div class="kicker">11 데이터 활용 계획 · 필수 데이터</div>
+  <h2 style="font-size:2.7cqw">필수 데이터 「악취배출시설현황」이 Agent의 기준표다</h2>
+  <div class="s12">
+    <div>
+      <div class="lab">필수 데이터 · 제주데이터허브</div>
+      <h3>제주특별자치도_<br>악취배출시설현황</h3>
+      <div class="m">사업장 58곳 · 2019.7.19 기준<br>구분 · 사업장명 · 주소 · 부지면적</div>
+      <div class="pre">전처리: 주소 → 좌표, 동일 주소 중복 탐지, 사업장명 정규화. 원본·전처리 파일과 명세를 제출물에 동봉</div>
+    </div>
+    <div class="uses">
+      <div class="use"><b>① 주의 알림 대상 · F6</b><p>rank_sources가 신고 마을의 바람 위쪽 시설을 이 목록에서 골라 주의 알림을 보낸다. <span class="fixed">화면·문안에는 표시하지 않는다</span></p></div>
+      <div class="use"><b>② 실측 이력 연결 · F9</b><p>get_farm_history가 사업장명으로 센터 실측 DB와 짝을 짓는다</p></div>
+      <div class="use"><b>③ 입지 리스크 · F8</b><p>주변 시설 수·거리·부지면적으로 입지 보고서를 만든다</p></div>
+      <div class="use"><b><span class="fixed">④ 지역 통계 · F3</span></b><p><span class="fixed">마을별 신고·처리 통계 옆에 주변 시설 수를 함께 보여 준다(이름 없이)</span></p></div>
+      <div class="warn">목록에 없는 실측 농장(광령리 4곳)은 센터 DB로 보완하고, 화면에 ‘목록 갱신 필요’로 표시한다</div>
+    </div>
+  </div>
+  <div class="with">함께 쓰는 데이터</div>
+  <div class="data5">
+    <div class="card"><b>악취조사 DB</b><p class="muted">제주악취관리센터</p><p>분기 실측 → 이력·성적표</p></div>
+    <div class="card"><b>풍향·풍속</b><p class="muted">기상청 API</p><p>시간별 → <span class="fixed">주의 알림 대상 선정</span></p></div>
+    <div class="card"><b>읍면동 유동인구</b><p class="muted">제주빅데이터센터</p><p>PC 안 집계 → 인구 보정</p></div>
+    <div class="card"><b>정보공개청구</b><p class="muted">제주시</p><p>민원·점검·처분 → 대조</p></div>
+    <div class="card"><b>주민 신고</b><p class="muted">카톡봇(대회: 가상)</p><p>원문·위치·강도 → 입력</p></div>
+  </div>
+  <p class="terms"><b>이용 조건</b> · 공공데이터법에 따라 출처 표기. 센터 데이터 원본은 외부로 보내지 않고, 10 미만 값은 가린다. [허브 데이터 이용조건 확인]</p>
+  <div class="foot">필수 데이터: jejudatahub.net/data/view/data/480 · 악취조사 DB: jomc.co.kr/survey/data · 12</div>
+</div></section>
+
+<!-- 13 탑재 계획 -->
+<section class="slide t-teal"><div class="bar"></div><div class="in">
+  <div class="pill">PART 2 · 냄새알림 AI Agent</div>
+  <div class="kicker">12 개발·탑재 계획</div>
+  <h2>센터 PC 한 대에서 돌고, 현장으로 그대로 이어진다</h2>
+  <div class="s13">
+    <div>
+      <table>
+        <tr><th style="width:24%">구분</th><th>대회판(11/20)</th><th>현장판(이후)</th></tr>
+        <tr><td>신고 입력</td><td>가상 신고 + 카톡 대화 시뮬레이터</td><td>카카오톡 채널 연동</td></tr>
+        <tr><td>발송</td><td>통화문·문자 생성, 기록만</td><td>음성·문자 API 실제 발송</td></tr>
+        <tr><td>센서</td><td>가상 센서값</td><td>공식 연계</td></tr>
+        <tr><td>실행</td><td>센터 PC 로컬 서버</td><td>서버 + 센터 PC 화면</td></tr>
+      </table>
+      <p style="margin-top:1.2cqw;font-size:1.25cqw;color:#3E4A47">판단 엔진과 도구는 두 판이 같다. 바뀌는 것은 입력과 발송 연결뿐이다.</p>
+    </div>
+    <div class="card env">
+      <h5>센터 실행 환경</h5><p>Windows 11 · i7-8700 · GTX 1060(3GB) · RAM 32GB · Chrome/Edge 1920×1080</p>
+      <h5>설치</h5><p>Python [버전] + 패키지 목록, 비전공자용 설치 매뉴얼</p>
+      <h5>외부 의존성(허용 주소 사전 등록)</h5><p>[LLM API 주소] · 기상청 API · open.jejudatahub.net. API 키는 환경변수로 입력</p>
+    </div>
+  </div>
+  <div class="foot">냄새알림 · AI Agent 기획서 · 13</div>
+</div></section>
+
+<!-- 14 신뢰성 -->
+<section class="slide t-teal"><div class="bar"></div><div class="in">
+  <div class="pill">PART 2 · 냄새알림 AI Agent</div>
+  <div class="kicker">13 결과 신뢰성 · 재현성 · 보안</div>
+  <h2>추정은 추정이라고 말한다</h2>
+  <div class="c4">
+    <div class="card"><h4>데이터 한계를 화면에 공개</h4><p>허브 목록은 2019년 기준, 중복 의심 항목 있음. 실측은 분기 1회, 단위 확인 중. <span class="fixed">원인 농장은 추정·표시하지 않고, 신고·처리 사실만 보여 준다(명예훼손 방지)</span></p></div>
+    <div class="card"><h4>개인정보</h4><p>신고자 ID·위치는 가명처리. 농장·외부에는 집계값만. LLM에는 신고 문장만 전달</p></div>
+    <div class="card"><h4>반출·전송 규칙</h4><p>센터 원본은 PC 안에서만 집계. 10 미만 셀 마스킹, 역산 가능한 표는 만들지 않음. <span class="fixed">민원서의 실측 이력은 농장별이 아닌 구역 전체 통계로</span></p></div>
+    <div class="card"><h4>재현성</h4><p>가상 신고·공개 데이터 동봉, 설치·실행 매뉴얼, 빈 PC 설치 테스트. 추출 결과는 원문과 함께 저장</p></div>
+  </div>
+  <div class="foot">냄새알림 · AI Agent 기획서 · 14</div>
+</div></section>
+
+<!-- 15 마무리 -->
+<section class="slide dark end"><div class="in">
+  <div class="kicker" style="margin-top:2cqw">14 기대 효과와 확장</div>
+  <h1>냄새는 사라지지만,<br>기록은 남는다.</h1>
+  <div class="steps">
+    <div><b>1단계 · 광령리 시범</b><small>카톡 채널 실운영, 신고와 실측을 함께 쌓는다</small></div>
+    <div><b>2단계 · 센서 연계</b><small>악취관리센터 데이터 공식 연계, 사각지대 탐지</small></div>
+    <div><b>3단계 · 서부 전역</b><small>한림·대정·한경 악취관리지역으로 확대</small></div>
+  </div>
+  <div class="foot" style="bottom:3.4cqw">냄새알림 · [팀명] · 15</div>
+</div></section>
+
+<script>
+  // 2쪽: 24시간 측정 막대 (8~11, 14~17, 18~20시)
+  const on = new Set([8,9,10,14,15,16,18,19]);
+  document.getElementById('hours').innerHTML =
+    Array.from({length:24}, (_, h) => `<i class="${on.has(h) ? 'on' : ''}"></i>`).join('');
+  // 4쪽: 연도별 15배 초과 비율
+  const data = [['2020',6.3],['2021',1.6],['2022',3.1],['2023',10.9],['2024',18.8],['2025',10.4],['2026 상',17.4]];
+  const max = 20;
+  document.getElementById('chart').innerHTML = data.map(([y, v]) =>
+    `<div class="c ${y==='2024'?'hi':''}"><span>${v}%</span><i style="height:${v/max*88}%"></i></div>`).join('');
+  document.getElementById('xl').innerHTML = data.map(([y]) =>
+    `<span class="${y==='2024'?'hi':''}">${y}</span>`).join('');
+</script>
+</body>
+</html>
