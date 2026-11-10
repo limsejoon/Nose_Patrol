@@ -78,7 +78,7 @@ def main():
 
     print("2) 최종 결과물 ZIP")
     key_file = ROOT / "평가용_키.txt"
-    key = key_file.read_text(encoding="utf-8").strip() if key_file.exists() else ""
+    key = key_file.read_text(encoding="utf-8-sig").strip() if key_file.exists() else ""   # 메모장 BOM 제거
     files = tracked_files()
     out = DIST / f"{TEAM}_냄새알림_최종결과물.zip"
     top = "냄새알림"
