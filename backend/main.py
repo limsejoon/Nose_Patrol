@@ -35,7 +35,8 @@ class FarmResp(BaseModel):
 def health():
     on = llm.available()
     return {"ok": True, "llm": f"Claude ({llm.model()})" if on else "규칙 기반(LLM 미설정)",
-            "llm_model": llm.model() if on else None}
+            "llm_model": llm.model() if on else None,
+            "llm_parse_model": llm.parse_model() if on else None}
 
 
 @app.post("/api/message")

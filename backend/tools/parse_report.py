@@ -32,7 +32,8 @@ def _schema(village_names):
 def parse(text: str) -> dict:
     vs = data.villages()
     names = [v["village"] for v in vs]
-    out = llm.ask(SYSTEM.format(villages=", ".join(names)), text, schema=_schema(names), max_tokens=400)
+    out = llm.ask(SYSTEM.format(villages=", ".join(names)), text, schema=_schema(names), max_tokens=400,
+                  model_name=llm.parse_model())
     if isinstance(out, dict) and "intensity" in out:
         out["parser"] = "llm"
         try:

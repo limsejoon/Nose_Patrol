@@ -15,7 +15,8 @@ DATA_DEMO = ROOT / "data" / "demo"
 
 # LLM: none(규칙 기반만) | anthropic (Claude)
 LLM_PROVIDER = os.getenv("LLM_PROVIDER", "none").lower()
-LLM_MODEL = os.getenv("LLM_MODEL", "")
+LLM_MODEL = os.getenv("LLM_MODEL", "")              # 분석 (비우면 claude-sonnet-5-5)
+LLM_PARSE_MODEL = os.getenv("LLM_PARSE_MODEL", "")  # 신고 해석 (비우면 claude-haiku-5-5)
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 LLM_TIMEOUT = float(os.getenv("LLM_TIMEOUT", "30"))
 

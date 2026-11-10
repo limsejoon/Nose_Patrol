@@ -9,10 +9,11 @@
 
 | 항목 | 내용 |
 |---|---|
-| 모델 | **Claude Haiku 5.5** (Anthropic, 모델 ID `claude-haiku-5-5`) |
+| 모델 | 말로 묻는 분석: **Claude Sonnet 5.5** (Anthropic, `claude-sonnet-5-5`)<br>카톡 신고 해석: **Claude Haiku 5.5** (`claude-haiku-5-5`) |
 | 호출 방식 | Anthropic 공식 Python SDK(`anthropic`), Messages API |
-| 바꾸는 법 | `.env` 의 `LLM_MODEL` (예: `claude-sonnet-5-5`, `claude-opus-5-5`) |
-| 비용 | 질문 1건 약 1원(입력 약 6천·출력 약 5백 토큰), 신고 해석 1건 1원 미만 |
+| 바꾸는 법 | `.env` 의 `LLM_MODEL`(분석), `LLM_PARSE_MODEL`(신고 해석). 예: `claude-haiku-5-5`, `claude-opus-5-5` |
+| 고른 이유 | 같은 질문 5개로 Haiku·Sonnet·Opus 비교. Sonnet이 가장 빠르고(평균 4.4초) 표·설명이 안정적. 신고 해석은 짧은 문장이라 Haiku로 충분 |
+| 비용 | 질문 1건 약 20원(입력 약 6천·출력 2~5백 토큰), 신고 해석 1건 1원 미만 |
 
 | 쓰는 곳 | AI가 하는 일 | AI가 하지 않는 일 | 코드 |
 |---|---|---|---|
