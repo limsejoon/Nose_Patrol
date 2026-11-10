@@ -44,8 +44,9 @@ table{border-collapse:collapse;width:100%;font-size:1.2cqw}
 th,td{border:1px solid #BFC4BF;padding:.75cqw 1cqw;text-align:left;vertical-align:top}
 th{background:#D5DCD8;font-weight:700}
 td{background:rgba(255,255,255,.35)}
-.fixed{background:#FFF0DF;border-radius:.3cqw;padding:0 .3cqw;box-shadow:inset 0 -.25cqw 0 var(--amber)}
-.dark .fixed,.s12 .fixed,.dcard .fixed{background:rgba(240,166,90,.22);color:#fff;box-shadow:inset 0 -.2cqw 0 var(--amber)}
+table.tight th,table.tight td{padding:.5cqw 1cqw;font-size:1.12cqw}
+.fixed{}
+
 
 /* 1 cover */
 .cover .in{padding:6.7cqw 6.7cqw}
@@ -232,7 +233,7 @@ td{background:rgba(255,255,255,.35)}
   <div class="sub">주민의 카톡 한 줄을<br>근거 있는 행동으로 바꾸는 악취 대응 AI Agent</div>
   <div class="meta">
     <div>시범 지역 · 제주시 애월읍 광령리<br>필수 데이터 · 제주데이터허브 「제주특별자치도_악취배출시설현황」</div>
-    <div>[팀명]<br>2026. 11.</div>
+    <div>애월주민<br>2026. 11.</div>
   </div>
 </div></section>
 
@@ -316,7 +317,7 @@ td{background:rgba(255,255,255,.35)}
     <div class="arrow">➜</div>
     <div class="card"><div class="who">행동</div><h4>대신 움직인다</h4><p><b>시청에 대표 민원 전화 1통</b>, 농장에 주의 알림, 주민에게 처리 결과.</p></div>
   </div>
-  <p class="goal"><b>구현 목표</b> · 주민 신고를 근거 있는 행정 행동으로 바꾸고, 센터 방문자(행정·사업자)가 말로 묻고 보고서를 받게 한다.</p>
+  <p class="goal"><b>구현 목표</b> · 주민 신고를 근거 있는 행정 행동으로 바꾸고, 센터 방문자(행정·사업자)가 말로 묻고 근거와 함께 분석 답을 받게 한다.</p>
   <div class="foot">냄새알림 · AI Agent 기획서 · 05</div>
 </div></section>
 
@@ -370,7 +371,7 @@ td{background:rgba(255,255,255,.35)}
     <div class="r"><h6>Agent가 거는 민원 전화 (예시)</h6>
       <p><span class="fixed">“안녕하세요, 제주시청 환경 담당 부서 맞으시죠? … 광령2리에서 지난 한 시간 동안 주민 열두 분이 악취 신고를 하셨어요. 냄새 세기는 평균 3.7, 꽤 심한 편이에요. 혹시 현장 한번 확인해 주실 수 있을까요? 같은 내용은 문자로도 바로 보내 드릴게요.”</span></p></div>
   </div>
-  <p class="note7">판단 단위: 같은 마을 · 최근 1시간 · 인구 대비 보정. 기준값(3명·10명·3시간)은 설정에서 변경. 모든 단계에서 신고자에게 처리 상황을 카톡으로 알린다.</p>
+  <p class="note7">판단 단위: 같은 마을 · 최근 1시간(인구 1천 명당 신고 수 함께 표시). 기준값(4명·10명·3시간)은 설정 파일에서 변경. 신고자에게는 접수와 처리 상황을 카톡 답장으로 알린다.</p>
   <div class="foot">냄새알림 · AI Agent 기획서 · 07</div>
 </div></section>
 
@@ -395,20 +396,20 @@ td{background:rgba(255,255,255,.35)}
   <div class="s9">
     <div class="side">
       <div class="card d"><h5>역할</h5><p>주민·행정·농장 사이의 악취 대응 조정자</p></div>
-      <div class="card"><h5>사용 모델</h5><p>[LLM 모델명] 외부 API. 센터가 비용을 부담하므로 소형 모델 우선, 호출 횟수 최소화</p></div>
+      <div class="card"><h5>사용 모델</h5><p>Claude Haiku 5.5 (claude-haiku-5-5). 가장 저렴한 모델, 질문 1건 약 1원. 설정으로 상위 모델 변경</p></div>
       <div class="card"><h5>원칙</h5><p>LLM은 숫자를 만들지 않는다. 집계·추정은 도구가 하고, LLM은 해석과 문장을 맡는다</p></div>
     </div>
     <div class="tools">
-      <div class="card"><b>parse_report</b><p>말 → 위치·시각·강도</p></div>
-      <div class="card"><b>geocode_place</b><p>“광령 2리” → 좌표</p></div>
-      <div class="card"><b>cluster_reports</b><p>사건 묶기, 인구 보정</p></div>
-      <div class="card"><b>filter_suspicious</b><p>중복·허위 가중치</p></div>
-      <div class="card"><b>get_wind</b><p>풍향·풍속(기상청)</p></div>
-      <div class="card"><b>rank_sources</b><p>주의 알림 보낼 바람 위쪽 농장 <span class="fixed">(내부용, 화면·문안 표시 안 함)</span></p></div>
-      <div class="card"><b>get_farm_history</b><p>실측·민원 이력</p></div>
-      <div class="card"><b>report_stats · query_stats</b><p><span class="fixed">지역·시간별 신고·처리 통계</span>, 말로 묻는 통계</p></div>
-      <div class="card"><b>draft_alert · complaint</b><p>경보문·민원서 작성</p></div>
-      <div class="card"><b>send · make_report</b><p>발송 기록·보고서 PDF</p></div>
+      <div class="card"><b>parse_report</b><p>카톡 문장 → 마을·시각·강도 (실패 시 규칙)</p></div>
+      <div class="card"><b>engine (사건·단계)</b><p>같은 마을 1시간 묶기 → 관찰·주의·경보·지속</p></div>
+      <div class="card"><b>report_stats</b><p>기간·마을·시간대별 신고·처리 집계</p></div>
+      <div class="card"><b>hourly_daily</b><p>시간대·날짜별 신고, 몰린 때</p></div>
+      <div class="card"><b>incident_list</b><p>사건별 처리 경과·걸린 시간</p></div>
+      <div class="card"><b>measurement_stats</b><p>악취조사 DB 연도·시간대별 초과율</p></div>
+      <div class="card"><b>facility_stats</b><p>악취배출시설 읍면·리·구분별 집계</p></div>
+      <div class="card"><b>rank_sources</b><p>주의 알림 대상 농장 고르기 (내부용, 표시 안 함)</p></div>
+      <div class="card"><b>drafts</b><p>통화 대본·문자·농장 알림·민원서 초안</p></div>
+      <div class="card"><b>Claude 도구 호출 루프</b><p>질문 → 도구 호출 → 근거와 함께 답</p></div>
     </div>
   </div>
   <div class="foot">냄새알림 · AI Agent 기획서 · 09</div>
@@ -419,20 +420,20 @@ td{background:rgba(255,255,255,.35)}
   <div class="pill">PART 2 · 냄새알림 AI Agent</div>
   <div class="kicker">09 핵심 기능 · 구현 범위</div>
   <h2>네 사용자, 열 가지 기능</h2>
-  <table style="margin-top:1.8cqw">
+  <table class="tight" style="margin-top:1.4cqw">
     <tr><th style="width:6%">ID</th><th style="width:26%">기능</th><th style="width:13%">사용자</th><th>내용</th><th style="width:11%">구현</th></tr>
     <tr><td>F1</td><td>자연어 신고 수집</td><td>주민</td><td>카톡 문장 → 값 추출, 동네 1회 등록</td><td>P0 동작</td></tr>
     <tr><td>F2</td><td>단계별 판단·경보</td><td>행정</td><td>관찰 · 주의 · 경보 · 지속, 경보 시 대표 민원 전화 1통</td><td>P0 동작</td></tr>
     <tr><td>F3</td><td><span class="fixed">신고·처리 통계</span></td><td>행정</td><td><span class="fixed">마을 × 시간대 신고 수, 날짜별 추이, 사건 단계, 사건별 처리 경과·걸린 시간</span></td><td>P0 동작</td></tr>
-    <tr><td>F4</td><td>말로 묻는 통계</td><td>행정</td><td>질문 → 집계·차트·보고서</td><td>P0 동작</td></tr>
-    <tr><td>F5</td><td>허위·중복 필터</td><td>행정</td><td>반복 신고, 풍향상 불가능한 위치</td><td>P1</td></tr>
-    <tr><td>F6</td><td>농장 주의 알림</td><td>농장</td><td>후보 전체에 주의, 조치 응답·효과 측정</td><td>P1</td></tr>
-    <tr><td>F7</td><td>처리 결과 피드백</td><td>주민</td><td>접수·전달·조치 상황 카톡 안내</td><td>P1</td></tr>
-    <tr><td>F8</td><td>입지 악취 리스크</td><td>사업자</td><td>주변 농장·풍향 빈도·이력 보고서</td><td>P1</td></tr>
-    <tr><td>F9</td><td>농장 개선 성적표</td><td>농장·행정</td><td>연도별 초과율 추이, 우수 농가 표시</td><td>P1</td></tr>
-    <tr><td>F10</td><td>센서 연계 슬롯</td><td>행정</td><td>센서 정상 + 신고 다발 → 사각지대 의심</td><td>P2 구조</td></tr>
+    <tr><td>F4</td><td>말로 묻는 분석</td><td>행정·사업자</td><td>질문 → Claude가 통계 도구 선택·호출 → 근거·표와 함께 답</td><td>P0 동작</td></tr>
+    <tr><td>F5</td><td>허위·중복 필터</td><td>행정</td><td>같은 사람 반복 신고는 사건 인원에서 1명으로 계산(동작). 풍향 기반 허위 판별은 향후</td><td>일부</td></tr>
+    <tr><td>F6</td><td>농장 주의 알림</td><td>농장</td><td>바람 위쪽 농장에 주의 알림, 농장주 응답 기록(농장주 화면)</td><td>P0 동작</td></tr>
+    <tr><td>F7</td><td>처리 결과 피드백</td><td>주민</td><td>접수·농장 알림·대표 전화·민원서 진행을 카톡 답장으로 안내</td><td>P0 동작</td></tr>
+    <tr><td>F8</td><td>입지 악취 리스크</td><td>사업자</td><td>주변 시설·풍향 빈도·이력 보고서</td><td>향후</td></tr>
+    <tr><td>F9</td><td>농장 개선 성적표</td><td>농장·행정</td><td>연도별 초과율 추이(구역 합산은 F4로 동작), 농가별 표시는 향후</td><td>일부</td></tr>
+    <tr><td>F10</td><td>센서 연계</td><td>행정</td><td>센서 정상 + 신고 다발 → 사각지대 의심</td><td>향후</td></tr>
   </table>
-  <div class="foot">P0 실제 동작 · P1 동작 또는 가상 데이터 시연 · P2 구조 제시 · 10</div>
+  <div class="foot">P0 동작: 제출 코드에서 실제 동작(신고는 가상 데이터) · 일부: 일부만 동작 · 향후: 현장판 계획 · 10</div>
 </div></section>
 
 <!-- 11 UI -->
@@ -476,25 +477,25 @@ td{background:rgba(255,255,255,.35)}
       <div class="lab">필수 데이터 · 제주데이터허브</div>
       <h3>제주특별자치도_<br>악취배출시설현황</h3>
       <div class="m">사업장 58곳 · 2019.7.19 기준<br>구분 · 사업장명 · 주소 · 부지면적</div>
-      <div class="pre">전처리: 주소 → 좌표, 동일 주소 중복 탐지, 사업장명 정규화. 원본·전처리 파일과 명세를 제출물에 동봉</div>
+      <div class="pre">전처리: 지번 주소 → 좌표(브이월드 지오코더), 같은 주소·같은 이름 중복 의심 6곳 표시. 원본·전처리 파일과 명세를 제출물에 동봉</div>
     </div>
     <div class="uses">
-      <div class="use"><b>① 주의 알림 대상 · F6</b><p>rank_sources가 신고 마을의 바람 위쪽 시설을 이 목록에서 골라 주의 알림을 보낸다. <span class="fixed">화면·문안에는 표시하지 않는다</span></p></div>
-      <div class="use"><b>② 실측 이력 연결 · F9</b><p>get_farm_history가 사업장명으로 센터 실측 DB와 짝을 짓는다</p></div>
-      <div class="use"><b>③ 입지 리스크 · F8</b><p>주변 시설 수·거리·부지면적으로 입지 보고서를 만든다</p></div>
-      <div class="use"><b><span class="fixed">④ 지역 통계 · F3</span></b><p><span class="fixed">마을별 신고·처리 통계 옆에 주변 시설 수를 함께 보여 준다(이름 없이)</span></p></div>
-      <div class="warn">목록에 없는 실측 농장(광령리 4곳)은 센터 DB로 보완하고, 화면에 ‘목록 갱신 필요’로 표시한다</div>
+      <div class="use"><b>① 지도 표시</b><p>58곳을 지번 좌표로 지도에 표시. 같은 주소는 하나로 묶고, 사업장명은 숨김</p></div>
+      <div class="use"><b>② 말로 묻는 분석 · F4</b><p>facility_stats 도구가 읍면·리·구분별 시설 수·부지면적을 집계해 Claude가 답한다</p></div>
+      <div class="use"><b>③ 목록 대조</b><p>광령리 실측 농장 4곳이 목록에 없음을 확인 → 지도·답변에 ‘목록 갱신 필요’ 표시</p></div>
+      <div class="use"><b>④ 품질 점검</b><p>같은 주소에 사업장 2곳, 같은 이름이 주소 2곳 등 중복 의심 6곳을 찾아 표시</p></div>
+      <div class="warn">목록에 없는 실측 농장은 악취조사 DB와 브이월드 장소검색으로 보완(3곳 위치 확인, 1곳 미확인)</div>
     </div>
   </div>
   <div class="with">함께 쓰는 데이터</div>
   <div class="data5">
-    <div class="card"><b>악취조사 DB</b><p class="muted">제주악취관리센터</p><p>분기 실측 → 이력·성적표</p></div>
-    <div class="card"><b>풍향·풍속</b><p class="muted">기상청 API</p><p>시간별 → <span class="fixed">주의 알림 대상 선정</span></p></div>
-    <div class="card"><b>읍면동 유동인구</b><p class="muted">제주빅데이터센터</p><p>PC 안 집계 → 인구 보정</p></div>
+    <div class="card"><b>악취조사 DB</b><p class="muted">제주악취관리센터</p><p>분기 실측 → 구역 초과율 분석</p></div>
+    <div class="card"><b>풍향·풍속</b><p class="muted">기상청 API(연결 예정)</p><p>주의 알림 대상 선정. 현재 기본값</p></div>
+    <div class="card"><b>지도·경계</b><p class="muted">브이월드 · OpenStreetMap</p><p>배경지도·좌표, 리 경계</p></div>
     <div class="card"><b>정보공개청구</b><p class="muted">제주시</p><p>민원·점검·처분 → 대조</p></div>
     <div class="card"><b>주민 신고</b><p class="muted">카톡봇(대회: 가상)</p><p>원문·위치·강도 → 입력</p></div>
   </div>
-  <p class="terms"><b>이용 조건</b> · 공공데이터법에 따라 출처 표기. 센터 데이터 원본은 외부로 보내지 않고, 10 미만 값은 가린다. [허브 데이터 이용조건 확인]</p>
+  <p class="terms"><b>이용 조건</b> · 공공데이터법에 따라 출처 표기(화면 하단·명세서). Claude에는 질문과 도구가 계산한 집계값만 보내고, 신고자 정보·원문 행은 보내지 않는다.</p>
   <div class="foot">필수 데이터: jejudatahub.net/data/view/data/480 · 악취조사 DB: jomc.co.kr/survey/data · 12</div>
 </div></section>
 
@@ -509,15 +510,15 @@ td{background:rgba(255,255,255,.35)}
         <tr><th style="width:24%">구분</th><th>대회판(11/20)</th><th>현장판(이후)</th></tr>
         <tr><td>신고 입력</td><td>가상 신고 + 카톡 대화 시뮬레이터</td><td>카카오톡 채널 연동</td></tr>
         <tr><td>발송</td><td>통화문·문자 생성, 기록만</td><td>음성·문자 API 실제 발송</td></tr>
-        <tr><td>센서</td><td>가상 센서값</td><td>공식 연계</td></tr>
+        <tr><td>센서</td><td>없음</td><td>공식 연계</td></tr>
         <tr><td>실행</td><td>센터 PC 로컬 서버</td><td>서버 + 센터 PC 화면</td></tr>
       </table>
       <p style="margin-top:1.2cqw;font-size:1.25cqw;color:#3E4A47">판단 엔진과 도구는 두 판이 같다. 바뀌는 것은 입력과 발송 연결뿐이다.</p>
     </div>
     <div class="card env">
       <h5>센터 실행 환경</h5><p>Windows 11 · i7-8700 · GTX 1060(3GB) · RAM 32GB · Chrome/Edge 1920×1080</p>
-      <h5>설치</h5><p>Python [버전] + 패키지 목록, 비전공자용 설치 매뉴얼</p>
-      <h5>외부 의존성(허용 주소 사전 등록)</h5><p>[LLM API 주소] · 기상청 API · open.jejudatahub.net. API 키는 환경변수로 입력</p>
+      <h5>설치 프로그램</h5><p>Python 3.12 이상(3.14에서 검증) · 패키지 fastapi, uvicorn, httpx, python-dotenv, anthropic · run.bat 한 번 실행 · 설치 매뉴얼 동봉</p>
+      <h5>외부 접속 주소(허용 목록 등록 요청)</h5><p>api.anthropic.com (Claude) · api.vworld.kr (배경지도) · tile.openstreetmap.org (브이월드 키 없을 때) · pypi.org (설치 때). 키는 .env 파일에 입력</p>
     </div>
   </div>
   <div class="foot">냄새알림 · AI Agent 기획서 · 13</div>
@@ -530,9 +531,9 @@ td{background:rgba(255,255,255,.35)}
   <h2>추정은 추정이라고 말한다</h2>
   <div class="c4">
     <div class="card"><h4>데이터 한계를 화면에 공개</h4><p>허브 목록은 2019년 기준, 중복 의심 항목 있음. 실측은 분기 1회, 단위 확인 중. <span class="fixed">원인 농장은 추정·표시하지 않고, 신고·처리 사실만 보여 준다(명예훼손 방지)</span></p></div>
-    <div class="card"><h4>개인정보</h4><p>신고자 ID·위치는 가명처리. 농장·외부에는 집계값만. LLM에는 신고 문장만 전달</p></div>
-    <div class="card"><h4>반출·전송 규칙</h4><p>센터 원본은 PC 안에서만 집계. 10 미만 셀 마스킹, 역산 가능한 표는 만들지 않음. <span class="fixed">민원서의 실측 이력은 농장별이 아닌 구역 전체 통계로</span></p></div>
-    <div class="card"><h4>재현성</h4><p>가상 신고·공개 데이터 동봉, 설치·실행 매뉴얼, 빈 PC 설치 테스트. 추출 결과는 원문과 함께 저장</p></div>
+    <div class="card"><h4>개인정보</h4><p>신고자는 익명 ID로만 구분. 농장에는 신고 수만 전달. Claude에는 신고 문장과 집계값만 보내고 신고자 정보는 보내지 않음</p></div>
+    <div class="card"><h4>계산과 전송</h4><p>숫자는 모두 PC 안의 도구가 계산하고 Claude는 설명만. 답마다 사용한 도구·조건·받은 데이터를 화면에 공개. 민원서의 실측 이력은 농장별이 아닌 구역 전체 통계로</p></div>
+    <div class="card"><h4>재현성</h4><p>가상 신고(시드 고정)·공개 데이터 동봉, 설치·사용자 매뉴얼, 새 폴더 설치 시험 완료. 신고 해석 결과는 원문과 함께 저장. Claude가 막히면 규칙 기반으로 계속 동작</p></div>
   </div>
   <div class="foot">냄새알림 · AI Agent 기획서 · 14</div>
 </div></section>
@@ -546,7 +547,7 @@ td{background:rgba(255,255,255,.35)}
     <div><b>2단계 · 센서 연계</b><small>악취관리센터 데이터 공식 연계, 사각지대 탐지</small></div>
     <div><b>3단계 · 서부 전역</b><small>한림·대정·한경 악취관리지역으로 확대</small></div>
   </div>
-  <div class="foot" style="bottom:3.4cqw">냄새알림 · [팀명] · 15</div>
+  <div class="foot" style="bottom:3.4cqw">냄새알림 · 애월주민 · 15</div>
 </div></section>
 
 <script>

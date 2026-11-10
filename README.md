@@ -1,9 +1,21 @@
 # 냄새알림 — 주민 카톡 신고 기반 악취 대응 AI Agent
 
-제주 AI·빅데이터 활용 AI Agent 개발 챌린지 제출용 (대회판 뼈대).
+「제주 AI·빅데이터 활용 AI Agent 개발 챌린지」 제출작 · 팀 **애월주민**
+
+주민이 카톡으로 평소 말처럼 냄새를 신고하면 Agent가 같은 마을 신고를 사건으로 묶어 단계(관찰·주의·경보·지속)를 정하고, 농장 주의 알림·시청 대표 민원 전화·민원서 초안을 대신 처리합니다. 센터 방문자는 **💬 Agent에게 묻기**로 신고·처리·실측·악취배출시설 통계를 말로 묻고, Claude가 고른 도구가 계산한 숫자로 근거와 함께 답을 받습니다.
+
+## 문서 (docs/)
+| 문서 | 내용 |
+|---|---|
+| [1_설치_실행_매뉴얼.md](docs/1_설치_실행_매뉴얼.md) | 센터 담당자용 설치·실행, 키 설정, 외부 접속 주소, 데이터 삭제, 오류·제약, 평가용 키 |
+| [2_사용자_매뉴얼.md](docs/2_사용자_매뉴얼.md) | 화면별 사용법, 말로 묻기 예시, 5분 시연 순서 |
+| [3_데이터_활용_명세.md](docs/3_데이터_활용_명세.md) | 필수 데이터(악취배출시설현황)·함께 쓰는 데이터의 출처·이용조건·전처리·분석 흐름, 외부 API, 오픈소스 |
+| [4_결과_설명자료.md](docs/4_결과_설명자료.md) | 문제 정의, Agent 구조, 기능·실행 결과, 검증, 한계, 센터 활용 방안 |
+| [5_AI_활용_명세.md](docs/5_AI_활용_명세.md) | 사용 모델(Claude Haiku 5.5), 프롬프트 위치, AI 활용 범위, 개발에 쓴 AI 도구 |
+| 냄새알림_기획서.html | 기획서 원본(15쪽). PDF는 `scripts/make_submission.py` 로 만듦 |
 
 ## 실행 (Windows)
-1. Python 3.11 설치 (설치할 때 "Add python.exe to PATH" 체크)
+1. Python 3.12 이상 설치 (설치할 때 "Add python.exe to PATH" 체크)
 2. 이 폴더에서 `run.bat` 더블클릭 → 브라우저가 `http://127.0.0.1:8000` 을 엽니다
 3. Claude를 쓰려면 `.env` 에 `ANTHROPIC_API_KEY` 를 넣고 다시 실행 (모델 기본값 `claude-haiku-5-5`). 키가 없으면 신고 해석은 규칙 기반으로 동작하고, 말로 묻는 분석만 꺼집니다
 
@@ -19,7 +31,7 @@ python -m uvicorn backend.main:app --reload --port 8000
 | 주소 | 내용 |
 |---|---|
 | `/index.html` | 센터 화면: 지도(배경 회색·지도·위성, 리·동 경계, 마을 신고 단계, 악취배출시설, 실측 대상 농장), 마을별 단계, 최근 신고 현황(24시간·이번 달·3개월), Agent 행동 기록. 마을을 누르면 요약과 [이 마을 통계 보기] |
-| `/stats.html` | 신고·처리 통계: 마을 × 시간대 신고 수, 날짜별 신고, 사건 단계, 마을별 처리 합계, 사건별 처리 경과 |
+| `/stats.html` | 💬 Agent에게 묻기(말로 묻는 분석) + 신고·처리 통계: 마을 × 시간대 신고 수, 날짜별 신고, 사건 단계, 마을별 처리 합계, 사건별 처리 경과 |
 | `/chat.html` | 주민 카톡 시뮬레이터 (대회판. 현장판은 카카오 챗봇 연결) |
 | `/farm.html` | 농장주 알림 화면 시뮬레이터 |
 
@@ -49,22 +61,27 @@ backend/
 frontend/              index.html, stats.html, chat.html, farm.html
 scripts/prepare_facilities.py  필수 데이터 전처리: 주소 → 좌표, 중복 의심 표시
 scripts/prepare_boundaries.py  광령리 주변 리·동 경계 (OpenStreetMap → data/processed/boundaries.geojson)
+scripts/check.py               자동 점검 17개 (시나리오·원칙·재현성, 키 없이 실행)
+scripts/make_submission.py     제출물 만들기 (기획서 PDF + 최종 결과물 ZIP → dist/)
+frontend/vendor/leaflet/       지도 라이브러리 Leaflet 1.9.4 (인터넷 없이 동작)
 data/raw/              실측 CSV(실제), 악취배출시설현황(실제), farms(3곳 실제 위치·1곳 미확인), villages(리사무소 좌표, 인구 임시값)
 data/processed/        facilities.csv(전처리 결과), geocode_cache.json, boundaries.geojson, tiles/(브이월드 배경지도 저장, 제출물 제외)
 data/demo/             시연 시나리오
 ```
 
-## 남은 일 (TODO)
-- [x] 「악취배출시설현황」 58곳을 `data/raw/` 에 넣고 지도에 표시 (리 단위로 묶음)
-- [ ] 브이월드 키(`VWORLD_API_KEY`)로 지번 좌표 받기 → 지금은 리 중심 근사값
-- [ ] 주의 알림 대상 고르기(`rank_sources`)에 악취배출시설 목록도 쓰기 (지금은 광령리 실측 농장 4곳만)
-- [ ] 농장·마을 좌표를 실제 주소 지오코딩 값으로 교체
-- [ ] 기상청 API 연결(`tools/geo.py get_wind`) + 오프라인용 `data/raw/wind.csv`
-- [x] 말로 묻는 분석(F4): 통계 화면 맨 위 [💬 Agent에게 묻기]
-- [ ] 입지 리스크 보고서 PDF(F8), 농장 성적표(F9) 화면
-- [ ] 유동인구 가상 CSV로 인구 보정
-- [ ] 허위·중복 필터(F5)
-- [ ] 설치 매뉴얼·데이터 명세서(`docs/`)
+## 점검과 제출물
+```
+.venv\Scripts\python scripts\check.py            # 자동 점검 (17/17 통과해야 함)
+.venv\Scripts\python scripts\make_submission.py  # dist/ 에 기획서 PDF와 최종 결과물 ZIP
+```
+평가용 Claude 키를 ZIP에 넣으려면 프로젝트 폴더에 `평가용_키.txt` (한 줄: `sk-ant-...`)를 만든 뒤 `make_submission.py` 를 실행합니다. 이 파일과 `dist/` 는 git에 올라가지 않습니다.
+
+## 향후 계획 (현장판)
+- 카카오톡 채널 연결, 실제 전화·문자 발송
+- 기상청 풍향 API 연결 (지금은 기본값)
+- 센터 CSV(유동인구 등)를 넣어 함께 분석, 분석 보고서 내보내기(10 미만 값 가림)
+- 입지 리스크 보고서(F8), 농가별 성적표(F9), 센서 연계(F10)
+- 주의 알림 대상에 악취배출시설 목록도 사용, 마을 인구 실제값
 
 ## 원칙
 - 숫자는 도구가 계산하고 LLM은 숫자를 만들지 않는다

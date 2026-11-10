@@ -10,3 +10,7 @@ data/processed/*
 !data/processed/boundaries.geojson
 # 브이월드 타일 저장소 (PC마다 새로 받음)
 data/processed/tiles/
+
+# 제출물 만들기 결과, 평가용 키(직접 만드는 파일)
+dist/
+평가용_키.txt

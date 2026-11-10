@@ -30,7 +30,11 @@ async function respond(fid,aid,resp){
 }
 async function load(){
   const s=await (await fetch('/api/state')).json();
-  if(!sel.options.length) s.farms.forEach(f=>sel.add(new Option(f.name,f.farm_id)));
+  if(!sel.options.length){
+    s.farms.filter(f=>f.lat!=null).forEach(f=>sel.add(new Option(f.name,f.farm_id)));   // 위치 확인된 농장만
+    const first=sel.options.length&&[...sel.options].find(o=>(s.farm_inbox[o.value]||[]).length);
+    if(first) sel.value=first.value;   // 알림이 온 농장부터 보여 준다
+  }
   const box=s.farm_inbox[sel.value]||[];
   document.getElementById('inbox').innerHTML=box.length?box.slice().reverse().map(a=>`
     <div class="msg"><div class="t">${a.ts.replace('T',' ')} · ${a.village}</div>${a.message}
