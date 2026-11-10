@@ -2,3 +2,4 @@ fastapi==0.115.*
 uvicorn==0.32.*
 httpx>=0.27
 python-dotenv>=1.0
+anthropic>=2.7    # Claude API (말로 묻는 분석, 신고 해석)

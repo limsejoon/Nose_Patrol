@@ -8,10 +8,15 @@ from fastapi.responses import RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from backend import config, data
-from backend.agent import engine, llm
+from backend.agent import analyst, engine, llm
 from backend.tools import history, report_stats, sim_history
 
 app = FastAPI(title="냄새알림")
+
+
+class Ask(BaseModel):
+    question: str
+    history: list[dict] | None = None   # 이어 묻기: [{"q": ..., "a": ...}]
 
 
 class Msg(BaseModel):
@@ -28,7 +33,9 @@ class FarmResp(BaseModel):
 
 @app.get("/api/health")
 def health():
-    return {"ok": True, "llm": config.LLM_PROVIDER if llm.available() else "규칙 기반(LLM 미설정)"}
+    on = llm.available()
+    return {"ok": True, "llm": f"Claude ({llm.model()})" if on else "규칙 기반(LLM 미설정)",
+            "llm_model": llm.model() if on else None}
 
 
 @app.post("/api/message")
@@ -126,10 +133,19 @@ def facilities():
             "groups": list(groups.values())}
 
 
+@app.post("/api/ask")
+def ask(a: Ask):
+    """말로 묻는 분석 (F4): Claude가 통계 도구를 골라 부르고, 도구가 계산한 숫자로 답한다."""
+    q = (a.question or "").strip()[:500]
+    if not q:
+        raise HTTPException(400, "질문이 비어 있습니다")
+    return analyst.ask(engine.S, q, a.history)
+
+
 @app.get("/api/stats/reports")
-def report_stats_api(days: int = 14, village: str | None = None):
-    """지역·시간별 신고와 처리 경과. days=0 이면 전체 기간."""
-    return report_stats.build(engine.S, days or None, village or None)
+def report_stats_api(days: int = 14, village: str | None = None, since: str | None = None):
+    """지역·시간별 신고와 처리 경과. days=0 이면 전체 기간. since=YYYY-MM-DD 를 주면 그날 0시부터."""
+    return report_stats.build(engine.S, days or None, village or None, since)
 
 
 # ---- 시연용 ----
@@ -144,12 +160,16 @@ def demo_play(name: str = "gwangryeong_morning"):
     p = config.DATA_DEMO / f"{name}.json"
     steps = json.loads(p.read_text(encoding="utf-8"))
     log = []
-    for s in steps:
-        if s.get("advance_min"):
-            engine.S.clock_offset += timedelta(minutes=s["advance_min"])
-            continue
-        r = engine.handle_message(s["user"], s["text"], s.get("place_village"))
-        log.append({"user": s["user"], "text": s["text"], "reply": r["reply"]})
+    engine.S.rule_only = True   # 정해진 시연 대본은 규칙으로 빠르게 (카톡 시뮬레이터 직접 입력은 LLM 해석)
+    try:
+        for s in steps:
+            if s.get("advance_min"):
+                engine.S.clock_offset += timedelta(minutes=s["advance_min"])
+                continue
+            r = engine.handle_message(s["user"], s["text"], s.get("place_village"))
+            log.append({"user": s["user"], "text": s["text"], "reply": r["reply"]})
+    finally:
+        engine.S.rule_only = False
     return {"played": len(log), "log": log}
 
 

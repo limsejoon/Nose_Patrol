@@ -1,51 +1,61 @@
-"""외부 LLM 호출. 실패하면 None을 돌려주고, 호출한 쪽이 규칙 기반으로 대신한다."""
+"""Claude(Anthropic) 호출. 공식 Python SDK를 쓴다.
+- 키가 없거나 통신이 막히면(센터 DLP 등) None 을 돌려주고, 부른 쪽이 규칙 기반으로 대신한다.
+- 모델은 .env 의 LLM_MODEL (기본: claude-haiku-5-5, 가장 저렴한 모델).
+- LLM은 숫자를 만들지 않는다: 문장 해석과 설명만 맡고, 계산은 도구(파이썬 함수)가 한다.
+"""
 import json
-import httpx
+import anthropic
 from backend import config
+
+DEFAULT_MODEL = "claude-haiku-5-5"
+_client = None
+
+
+def model() -> str:
+    return config.LLM_MODEL or DEFAULT_MODEL
 
 
 def available() -> bool:
-    if config.LLM_PROVIDER == "anthropic":
-        return bool(config.ANTHROPIC_API_KEY)
-    if config.LLM_PROVIDER == "openai":
-        return bool(config.OPENAI_API_KEY)
-    return False
+    return config.LLM_PROVIDER == "anthropic" and bool(config.ANTHROPIC_API_KEY)
 
 
-def ask(system: str, user: str, want_json: bool = False, max_tokens: int = 600):
+def client() -> anthropic.Anthropic:
+    global _client
+    if _client is None:
+        _client = anthropic.Anthropic(api_key=config.ANTHROPIC_API_KEY, timeout=config.LLM_TIMEOUT, max_retries=1)
+    return _client
+
+
+def _text(resp) -> str:
+    """응답에서 글자 블록만 모은다 (생각 블록 등은 건너뜀)."""
+    return "".join(b.text for b in resp.content if b.type == "text").strip()
+
+
+def ask(system: str, user: str, want_json: bool = False, max_tokens: int = 600, schema: dict | None = None):
+    """한 번 묻고 답을 받는다. schema 를 주면 그 JSON 형식으로만 답하게 강제한다(구조화된 출력)."""
     if not available():
         return None
+    output_config = {"effort": "low"}
+    if schema:
+        output_config["format"] = {"type": "json_schema", "schema": schema}
     try:
-        if config.LLM_PROVIDER == "anthropic":
-            r = httpx.post(
-                "https://api.anthropic.com/v1/messages",
-                headers={"x-api-key": config.ANTHROPIC_API_KEY,
-                         "anthropic-version": "2023-06-01",
-                         "content-type": "application/json"},
-                json={"model": config.LLM_MODEL or "claude-haiku-5-5",
-                      "max_tokens": max_tokens, "system": system,
-                      "messages": [{"role": "user", "content": user}]},
-                timeout=config.LLM_TIMEOUT)
-            r.raise_for_status()
-            text = r.json()["content"][0]["text"]
-        else:
-            r = httpx.post(
-                "https://api.openai.com/v1/chat/completions",
-                headers={"Authorization": f"Bearer {config.OPENAI_API_KEY}"},
-                json={"model": config.LLM_MODEL or "gpt-4o-mini",
-                      "max_tokens": max_tokens,
-                      "messages": [{"role": "system", "content": system},
-                                   {"role": "user", "content": user}]},
-                timeout=config.LLM_TIMEOUT)
-            r.raise_for_status()
-            text = r.json()["choices"][0]["message"]["content"]
-    except Exception as e:  # 통신 차단(DLP), 키 오류 등
-        print(f"[LLM] 호출 실패 → 규칙 기반 사용: {e}")
+        resp = client().messages.create(
+            model=model(), max_tokens=max_tokens, system=system,
+            output_config=output_config,
+            messages=[{"role": "user", "content": user}],
+        )
+    except anthropic.APIConnectionError as e:   # 통신 차단(DLP), 네트워크
+        print(f"[LLM] 연결 실패 → 규칙 기반 사용: {e}")
         return None
-    if not want_json:
-        return text.strip()
+    except anthropic.APIStatusError as e:       # 키 오류, 한도 초과, 서버 오류
+        print(f"[LLM] API 오류 {e.status_code} → 규칙 기반 사용: {e.message}")
+        return None
+    if resp.stop_reason == "refusal":
+        return None
+    text = _text(resp)
+    if not (want_json or schema):
+        return text
     try:
-        s, e = text.find("{"), text.rfind("}")
-        return json.loads(text[s:e + 1])
-    except Exception:
+        return json.loads(text) if schema else json.loads(text[text.find("{"):text.rfind("}") + 1])
+    except (ValueError, json.JSONDecodeError):
         return None

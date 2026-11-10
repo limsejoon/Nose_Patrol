@@ -1,29 +1,58 @@
 """draft_alert / draft_farm_alert / draft_complaint: 민원 전화 문안, 문자, 농장 알림, 민원서 초안.
-원인 농장(이름·방향·거리)은 문안에 넣지 않는다(명예훼손 방지). 신고 집계와 바람 정보만 쓴다.
+원인 농장(이름·방향·거리)과 풍향은 문안에 넣지 않는다. 신고 집계와 공개 실측 통계만 쓴다.
+(풍향은 주의 알림을 보낼 농장을 고르는 데만 엔진 안에서 쓴다.)
 숫자는 모두 엔진이 계산한 값을 넣는다. LLM은 쓰지 않아도 되도록 템플릿을 기본으로 둔다."""
 
 
-def call_script(village, n, avg, wind):
-    return (f"안녕하세요, 주민 악취 신고 서비스 냄새알림입니다. "
-            f"애월읍 {village}에서 최근 1시간 동안 주민 {n}명이 악취를 신고했습니다. "
-            f"평균 강도는 5점 중 {avg:.1f}점이고, {wind['label']} {wind['speed']:.0f}미터입니다. "
-            f"현장 확인을 요청드립니다. 같은 내용을 문자로 보내 드리겠습니다.")
+_ONES = ["", "한", "두", "세", "네", "다섯", "여섯", "일곱", "여덟", "아홉"]
+_TENS = ["", "열", "스물", "서른", "마흔", "쉰", "예순", "일흔", "여든", "아흔"]
 
 
-def sms(village, n, avg, wind):
-    return (f"[냄새알림] {village} 최근1시간 주민 {n}명 악취 신고(평균 {avg:.1f}/5). "
-            f"{wind['label']} {wind['speed']:.0f}m/s. 현장 확인 요청")
+def _people(n: int) -> str:
+    """사람 수를 말로: 10 → '열 분', 12 → '열두 분', 20 → '스무 분'. 100 이상은 '120명'처럼 숫자로."""
+    if not 0 < n < 100:
+        return f"{n}명"
+    t, o = divmod(n, 10)
+    tens = "스무" if (t == 2 and o == 0) else _TENS[t]
+    return f"{tens}{_ONES[o]} 분"
 
 
-def farm_alert(village, n, wind):
+def _level(avg: float) -> str:
+    if avg >= 4.5:
+        return "아주 심한 편"
+    if avg >= 3.5:
+        return "꽤 심한 편"
+    if avg >= 2.5:
+        return "분명하게 나는 정도"
+    return "약하게 나는 정도"
+
+
+def call_script(village, n, avg):
+    """대표 민원 전화 대본. 실제 통화처럼 짧은 문장, 존댓말, 숫자는 말로 읽는다.
+    한 줄 = 한 번에 말하는 단위(화면의 [듣기]는 줄마다 잠깐 쉬고, 물음표 뒤에는 대답할 틈을 둔다)."""
+    return "\n".join([
+        "안녕하세요, 제주시청 환경 담당 부서 맞으시죠?",
+        "저는 애월읍 광령리 주민들 악취 신고를 모아서 전해 드리는 냄새알림이라고 합니다.",
+        f"다름이 아니라, {village}에서 지난 한 시간 동안 주민 {_people(n)}이 악취 신고를 하셨어요.",
+        f"냄새 세기는 다섯 단계 중에 평균 {avg:.1f}, {_level(avg)}이에요.",
+        "혹시 현장 한번 확인해 주실 수 있을까요?",
+        "방금 말씀드린 내용은 문자로도 바로 보내 드릴게요.",
+        "바쁘신데 시간 내 주셔서 감사합니다.",
+    ])
+
+
+def sms(village, n, avg):
+    return (f"[냄새알림] {village} 최근1시간 주민 {n}명 악취 신고(평균 {avg:.1f}/5). 현장 확인 요청")
+
+
+def farm_alert(village, n):
     return (f"[냄새알림] 지금 {village} 주민 {n}명이 악취를 신고했어요. "
-            f"{wind['label']} {wind['speed']:.0f}m/s, 농장 쪽에서 마을로 불고 있어요. 저감시설 점검을 부탁드려요.")
+            f"저감시설 점검을 부탁드려요.")
 
 
-def complaint(village, n_total, hours, wind, history_lines):
+def complaint(village, n_total, hours, history_lines):
     return (f"제목: 애월읍 {village} 축산 악취 지속 발생에 따른 현장 조치 요청\n\n"
             f"1. 발생 현황: {village}에서 {hours:.0f}시간 넘게 악취 신고가 이어졌으며, 누적 신고자는 {n_total}명입니다.\n"
-            f"2. 당시 바람: {wind['label']} {wind['speed']:.0f}m/s\n"
-            f"3. 참고 실측 이력(제주악취관리센터, 구역 전체): " + ("; ".join(history_lines) or "없음") + "\n"
-            f"4. 요청 사항: 해당 시간대 현장 확인 및 추가 측정을 요청합니다.\n\n"
+            f"2. 참고 실측 이력(제주악취관리센터, 구역 전체): " + ("; ".join(history_lines) or "없음") + "\n"
+            f"3. 요청 사항: 해당 시간대 현장 확인 및 추가 측정을 요청합니다.\n\n"
             f"※ 주민 신고 집계와 공개 실측 통계만 담았으며, 특정 사업장을 원인으로 지목하지 않습니다. 신고자 개인정보는 포함하지 않았습니다.")

@@ -20,7 +20,8 @@ def intensity(text: str) -> int:
 
 
 def time_expr(text: str):
-    m = re.search(r"(새벽|아침|오전|낮|오후|저녁|밤)?\s*(\d{1,2})\s*시", text)
+    # "3시간째"·"2시간 동안"처럼 시간 길이는 시각이 아니다 → "시" 뒤에 "간"이 오면 건너뛴다
+    m = re.search(r"(새벽|아침|오전|낮|오후|저녁|밤)?\s*(\d{1,2})\s*시(?!간)", text)
     if m:
         h = int(m.group(2))
         part = m.group(1) or ""

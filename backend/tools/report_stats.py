@@ -18,9 +18,11 @@ def _med(xs):
     return round(median(xs)) if xs else None
 
 
-def build(S, days: int | None = 14, village: str | None = None) -> dict:
+def build(S, days: int | None = 14, village: str | None = None, since_date: str | None = None) -> dict:
     now = S.now()
     since = now - timedelta(days=days) if days else None
+    if since_date:  # 예: 이번 달 1일 0시부터
+        since = datetime.fromisoformat(since_date)
     in_range = lambda ts: since is None or _t(ts) >= since
     want = lambda v: not village or v == village
 

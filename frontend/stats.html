@@ -20,6 +20,26 @@
   .flab{font-size:13px;color:var(--sub);margin-right:6px}
   .note{font-size:13px;color:var(--sub)}
   .sim{background:#FFF4E5;border:1px solid #F0C48F;color:#7A4A12;border-radius:8px;padding:6px 12px;font-size:13px}
+  .ask{border:2px solid var(--teal)}
+  .askhead{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  #askForm{display:flex;gap:8px}
+  #askInput{flex:1;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:15px}
+  #askBtn{border:0;border-radius:8px;padding:0 18px;background:var(--dark);color:#fff;font:inherit;font-size:15px;cursor:pointer}
+  #askBtn:disabled{opacity:.5;cursor:wait}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
+  .chips button{border:1px solid var(--line);background:#F4F6F3;border-radius:14px;padding:4px 10px;font:inherit;font-size:13px;cursor:pointer;color:var(--text)}
+  .chips button:hover{border-color:var(--teal)}
+  .qa{border-top:1px dashed var(--line);margin-top:12px;padding-top:10px}
+  .qa .q{font-weight:700;margin-bottom:6px}
+  .qa .a{line-height:1.7;font-size:15px}
+  .qa .a table{width:auto;margin:6px 0;font-size:14px}
+  .qa .a th,.qa .a td{padding:4px 10px}
+  .qa details{margin-top:6px;font-size:13px}
+  .qa summary{cursor:pointer;color:var(--teal)}
+  .step{background:#F6F8F7;border-radius:6px;padding:6px 8px;margin:4px 0}
+  .step code{font-size:12px;color:var(--sub)}
+  .step pre{white-space:pre-wrap;font-size:12px;max-height:180px;overflow:auto;margin:4px 0 0}
+  .thinking{color:var(--sub);font-size:14px}
   .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
   .kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
   .kpi b{display:block;font-size:26px;font-weight:800;color:var(--dark);font-variant-numeric:tabular-nums}
@@ -74,10 +94,21 @@
 <main>
   <div class="filters">
     <div><span class="flab">기간</span><span class="seg" id="fDays">
-      <button data-v="1">최근 24시간</button><button data-v="7">7일</button><button data-v="14">14일</button><button data-v="30" class="on">30일</button><button data-v="0">전체</button></span></div>
+      <button data-v="1">최근 24시간</button><button data-v="7">7일</button><button data-v="month" id="btnMonth">이번 달</button><button data-v="30">30일</button><button data-v="90">3개월</button><button data-v="0">전체</button></span></div>
     <div><span class="flab">마을</span><span class="seg" id="fVillage"><button data-v="" class="on">전체</button></span></div>
     <span id="simNote"></span>
   </div>
+
+  <section class="card ask" id="ask">
+    <div class="askhead"><h3>💬 Agent에게 묻기</h3><span class="note" id="askModel"></span></div>
+    <p class="desc">평소 말로 물어보세요. Agent가 알맞은 통계 도구를 골라 계산하고, 근거와 함께 답합니다. 숫자는 모두 도구가 계산한 값입니다.</p>
+    <form id="askForm" autocomplete="off">
+      <input id="askInput" maxlength="500" placeholder="예: 이번 달 광령2리 오전 신고 몇 건이야?">
+      <button type="submit" id="askBtn">묻기</button>
+    </form>
+    <div class="chips" id="askChips"></div>
+    <div id="askLog"></div>
+  </section>
 
   <div class="kpis" id="kpis"></div>
 
@@ -122,7 +153,10 @@ const STAGE_COLOR=['#8A9792','#2F7F86','#B85A1A','#7A2E0E'];
 const HEAT=['var(--h0)','var(--h1)','var(--h2)','var(--h3)','var(--h4)','var(--h5)'];
 const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fmtMin=m=>m==null?'–':(m<60?`${m}분`:`${Math.floor(m/60)}시간${m%60?` ${m%60}분`:''}`);
-let F={days:'30',village:new URLSearchParams(location.search).get('village')||''};   // 센터 화면에서 마을을 눌러 오면 그 마을로
+const _q=new URLSearchParams(location.search);
+const monthStart=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-01`};   // 이번 달 1일
+let F={days:_q.get('days')||'30',village:_q.get('village')||''};   // 센터 화면에서 넘어오면 그 기간·마을로
+document.querySelectorAll('#fDays button').forEach(b=>b.classList.toggle('on',b.dataset.v===F.days));
 
 // 공용 툴팁
 const tip=document.getElementById('tip');
@@ -148,7 +182,7 @@ document.getElementById('simBtn').onclick=async()=>{
 
 let villagesInit=false;
 async function load(){
-  const q=new URLSearchParams({days:F.days,village:F.village});
+  const q=new URLSearchParams(F.days==='month'?{days:0,since:monthStart(),village:F.village}:{days:F.days,village:F.village});
   const s=await (await fetch('/api/stats/reports?'+q)).json();
   document.getElementById('now').textContent=s.now.replace('T',' ');
   if(!villagesInit){
@@ -217,6 +251,42 @@ async function load(){
         <td><span class="badge s${i.stage}">${i.stage} ${i.stage_name}</span></td><td><div class="steps">${chips}</div></td><td style="white-space:nowrap">${i.outcome}</td></tr>`}).join('')}</tbody></table>`;
 }
 load(); setInterval(load,10000);
+
+// ---- 💬 Agent에게 묻기
+const EXAMPLES=['이번 달 광령2리 오전 신고 몇 건이야?','최근 30일 신고가 가장 많이 몰린 시간대는?','경보까지 간 사건은 대표 전화까지 몇 분 걸렸어?',
+  '2023년부터 실측 초과율이 어떻게 변했어?','악취관리지역 시설이 가장 많은 읍면은?'];
+const askHist=[];
+document.getElementById('askChips').innerHTML=EXAMPLES.map(q=>`<button type="button">${esc(q)}</button>`).join('');
+document.querySelectorAll('#askChips button').forEach(b=>b.onclick=()=>{document.getElementById('askInput').value=b.textContent;askNow()});
+document.getElementById('askForm').onsubmit=e=>{e.preventDefault();askNow()};
+fetch('/api/health').then(r=>r.json()).then(h=>{document.getElementById('askModel').textContent=h.llm_model?`모델: ${h.llm_model}`:'Claude API 키 없음 → 말로 묻기 꺼짐'});
+// 마크다운 조금만: 굵게, 표, 줄바꿈
+function md(t){
+  const lines=esc(t).split('\n'); let out='', tbl=[];
+  const flush=()=>{ if(!tbl.length) return; const rows=tbl.filter(r=>!/^\|\s*-/.test(r)).map(r=>r.replace(/^\||\|$/g,'').split('|').map(c=>c.trim()));
+    out+='<table><thead><tr>'+rows[0].map(c=>`<th>${c}</th>`).join('')+'</tr></thead><tbody>'+rows.slice(1).map(r=>'<tr>'+r.map(c=>`<td>${c}</td>`).join('')+'</tr>').join('')+'</tbody></table>'; tbl=[]; };
+  for(const l of lines){ if(/^\s*\|/.test(l)){tbl.push(l.trim());continue} flush(); out+=l.trim()?l+'<br>':'<br>'; }
+  flush();
+  return out.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/(<br>){3,}/g,'<br><br>');
+}
+async function askNow(){
+  const inp=document.getElementById('askInput'), q=inp.value.trim(); if(!q) return;
+  const btn=document.getElementById('askBtn'), log=document.getElementById('askLog');
+  btn.disabled=true; inp.value='';
+  const box=document.createElement('div'); box.className='qa';
+  box.innerHTML=`<div class="q">Q. ${esc(q)}</div><div class="a thinking">Agent가 데이터를 찾고 계산하는 중…</div>`;
+  log.prepend(box);
+  try{
+    const r=await (await fetch('/api/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,history:askHist})})).json();
+    const steps=(r.steps||[]).map((s,i)=>`<div class="step"><b>${i+1}. ${esc(s.label)}</b> <code>${esc(JSON.stringify(s.input))}</code>
+      ${s.error?`<div style="color:#9C2F12">오류: ${esc(s.error)}</div>`:`<details><summary>받은 데이터</summary><pre>${esc(JSON.stringify(s.output,null,1))}</pre></details>`}</div>`).join('');
+    box.querySelector('.a').classList.remove('thinking');
+    box.querySelector('.a').innerHTML=md(r.answer||'');
+    if(steps) box.insertAdjacentHTML('beforeend',`<details><summary>Agent가 한 일 — 도구 ${r.steps.length}번 사용${r.seconds?` · ${r.seconds}초`:''}</summary>${steps}</details>`);
+    if(r.ok) askHist.push({q,a:r.answer});
+  }catch(e){ box.querySelector('.a').textContent='서버에 연결하지 못했습니다.'; }
+  btn.disabled=false; inp.focus();
+}
 </script>
 </body>
 </html>

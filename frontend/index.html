@@ -23,14 +23,54 @@
   .badge{display:inline-block;border-radius:20px;padding:3px 12px;color:#fff;font-weight:700;font-size:14px}
   .s0{background:#8A9792}.s1{background:var(--teal)}.s2{background:var(--orange)}.s3{background:#7A2E0E}
   .row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px dashed var(--line);font-size:14px}
-  .bar{height:12px;background:#D9772B;border-radius:4px}
-  .act{border-left:4px solid var(--teal);padding:8px 10px;margin:6px 0;background:#F4F8F7;border-radius:6px;font-size:14px;white-space:pre-wrap}
-  .act.city_call,.act.sms{border-color:var(--orange);background:#FBEBDD}.act.complaint{border-color:#7A2E0E}
-  .act button{margin-top:6px;border:0;border-radius:6px;padding:6px 10px;background:var(--dark);color:#fff;cursor:pointer}
+  .rhead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+  .rhead h3{margin:0}
+  .rseg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .rseg button{border:0;background:none;padding:4px 10px;font:inherit;font-size:13px;cursor:pointer;color:var(--text)}
+  .rseg button+button{border-left:1px solid var(--line)}
+  .rseg button.on{background:var(--dark);color:#fff}
+  .rk{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+  .rk div{background:#F4F6F3;border-radius:8px;padding:6px 8px}
+  .rk b{display:block;font-size:20px;color:var(--dark);font-variant-numeric:tabular-nums}
+  .rk span{font-size:12px;color:var(--sub)}
+  .rbars{display:flex;align-items:flex-end;gap:2px;height:56px;border-bottom:1px solid #B9C1BD}
+  .rbars i{flex:1;background:var(--teal);border-radius:3px 3px 0 0;min-height:0}
+  .rbars i.z{height:2px!important;background:#D3DAD6}
+  .rbars i:hover{background:#1E5F63}
+  .rx{display:flex;justify-content:space-between;font-size:11px;color:var(--sub);margin:3px 0 8px}
+  .rv{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:13px;border-bottom:1px dashed var(--line)}
+  .rv b{width:56px}.rv .t{flex:1;background:#EEF2F0;border-radius:4px;height:10px}.rv .t i{display:block;height:100%;border-radius:4px;background:var(--teal)}
+  .rv .n{width:64px;text-align:right;font-variant-numeric:tabular-nums}
+  .rfoot{display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-size:13px}
+  .rfoot a{color:var(--teal);font-weight:600;text-decoration:none}
+  .achips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+  .achips span{background:#F1F4F2;border-radius:14px;padding:3px 10px;font-size:13px}
+  .achips em{font-style:normal;color:#fff;background:#9C2F12;border-radius:10px;padding:0 6px;margin-left:2px}
+  .asec{border:1px solid var(--line);border-radius:10px;margin:6px 0;background:#fff}
+  .asec>summary{display:flex;align-items:center;gap:8px;padding:8px 10px;cursor:pointer;list-style:none;font-size:14px}
+  .asec>summary::-webkit-details-marker{display:none}
+  .asec>summary::after{content:"▸";margin-left:auto;color:var(--sub);transition:transform .15s}
+  .asec[open]>summary::after{transform:rotate(90deg)}
+  .asec .ai{width:22px;text-align:center}.asec .as{color:var(--sub);font-size:13px}
+  .asec[data-k="todo"]{border-color:#E3A27A;background:#FFF6EF}
+  .ab{padding:0 10px 10px}
+  .aitem{border-top:1px dashed var(--line);padding:8px 0;font-size:13px}
+  .aitem:first-child{border-top:0}
+  .aitem .ah{margin-bottom:4px}
+  .aitem button{margin-top:6px;border:0;border-radius:6px;padding:6px 10px;background:var(--dark);color:#fff;cursor:pointer;font:inherit;font-size:13px}
+  .aitem button.sm{padding:3px 8px;font-size:12px}
+  .aitem.urgent button{background:#9C2F12}
+  .atext>summary{cursor:pointer;color:var(--teal);font-size:12px}
+  .atext pre,.atx{white-space:pre-wrap;font:inherit;font-size:13px;background:#F6F8F7;border-radius:6px;padding:6px 8px;margin:4px 0}
+  .ok{color:#1F6E4A;font-weight:600}.wait{color:#9C5A12;font-weight:600}
+  .fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px}
+  .fcard{border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px;background:#FBFCFB}
+  .fcard .fh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+  .fcard .fl{color:var(--sub);font-size:12px}
   .muted{color:var(--sub);font-size:13px}
   .facm{background:#5B4A8B;color:#fff;border:2px solid #fff;border-radius:6px;text-align:center;font-weight:700;font-size:12px;box-shadow:0 1px 4px rgba(0,0,0,.35)}
   .leaflet-container{color:var(--text);font-family:inherit}
-  .legend,.mapctl,.windc{background:rgba(253,252,248,.96);border:1px solid var(--line);border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.12)}
+  .legend,.mapctl{background:rgba(253,252,248,.96);border:1px solid var(--line);border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.12)}
   .legend{padding:8px 12px;font-size:12px;line-height:1.5;display:flex;flex-direction:column;gap:4px}
   .legend label{display:flex;align-items:center;gap:6px;cursor:pointer}
   .legend .lg{display:inline-block;flex:none}
@@ -45,9 +85,6 @@
   .mapctl button{border:0;background:none;padding:6px 11px;font:inherit;font-size:13px;cursor:pointer;color:var(--text)}
   .mapctl button+button{border-left:1px solid var(--line)}
   .mapctl button.on{background:var(--dark);color:#fff}
-  .windc{display:flex;align-items:center;gap:8px;padding:6px 10px 6px 6px;font-size:13px}
-  .windc svg{transition:transform .6s}
-  .windc small{display:block;color:var(--sub);font-size:11px}
   .rlabel{display:inline-block;transform:translate(-50%,-50%);white-space:nowrap;font-size:12px;font-weight:600;color:#4c5754;text-shadow:0 0 3px #fff,0 0 6px #fff;pointer-events:none}
   .rlabel.focus{font-size:15px;font-weight:800;color:#164f54;letter-spacing:.05em}
   .vm{position:relative;width:var(--d);height:var(--d)}
@@ -64,10 +101,11 @@
 </head>
 <body>
 <header>
-  <h1>냄새알림</h1><span class="sub">애월읍 광령리 · <span id="clock"></span> · <span id="wind"></span> · <span id="llm"></span></span>
+  <h1>냄새알림</h1><span class="sub">애월읍 광령리 · <span id="clock"></span> · <span id="llm"></span></span>
   <span class="sp"></span>
   <a href="chat.html" target="_blank">주민 카톡(시뮬레이터)</a>
   <a href="farm.html" target="_blank">농장주 화면</a>
+  <a href="stats.html#ask">💬 Agent에게 묻기</a>
   <a href="stats.html">📊 통계</a>
   <button onclick="demo('play')">▶ 시연: 아침 신고 12건</button>
   <button onclick="demo('advance')">⏩ 3시간 뒤</button>
@@ -78,10 +116,13 @@
   <div id="map"></div>
   <div class="panel">
     <div class="card"><h3>마을별 단계 (최근 1시간)</h3><div id="villages"></div></div>
+    <div class="card">
+      <div class="rhead"><h3>최근 신고 현황</h3>
+        <span class="rseg" id="recentSeg"><button data-p="24h" class="on">24시간</button><button data-p="month">이번 달</button><button data-p="3m">3개월</button></span></div>
+      <div id="recent" class="muted">불러오는 중…</div>
+    </div>
     <div class="card"><h3>Agent 행동 기록</h3><div id="actions" class="muted">아직 없음</div></div>
     <div class="card"><h3>최근 신고</h3><div id="reports" class="muted">아직 없음</div></div>
-    <div class="card"><h3>실측 통계 <span class="muted">(악취조사 DB · 15배 초과율)</span></h3><div id="stats"></div>
-      <p class="muted">알아 둘 점: 실측은 분기 1회, 단위 확인 중. 원인 농장은 추정·표시하지 않습니다</p></div>
   </div>
 </main>
 <script>
@@ -128,17 +169,6 @@ fetch('/api/mapconfig').then(r=>r.json()).then(c=>{
 const bndLayer=L.layerGroup().addTo(map), vilLayer=L.layerGroup().addTo(map),
       facLayer=L.layerGroup().addTo(map), farmLayer=L.layerGroup().addTo(map);
 const LAYERS={bnd:bndLayer,vil:vilLayer,fac:facLayer,farm:farmLayer};
-
-// ---- 바람 (지도 왼쪽 위)
-const windCtl=L.control({position:'topleft'});
-windCtl.onAdd=()=>{const d=L.DomUtil.create('div','windc');d.id='windc';return d};
-windCtl.addTo(map);
-function drawWind(w){
-  const to=(w.from_deg+180)%360;
-  document.getElementById('windc').innerHTML=
-    `<svg viewBox="0 0 40 40" width="40" height="40" style="transform:rotate(${to}deg)"><circle cx="20" cy="20" r="18" fill="none" stroke="#c9d3cf"/><path d="M20 6 L28 22 L21 19 L21 33 L19 33 L19 19 L12 22 Z" fill="#16312C"/></svg>
-     <div><b>${esc(w.label)} ${w.speed}m/s</b><small>${esc(w.source)}</small></div>`;
-}
 
 // ---- 범례 + 켜고 끄기 (왼쪽 아래)
 const legend=L.control({position:'bottomleft'});
@@ -253,40 +283,145 @@ function drawFarms(s){
   s.farms.filter(f=>f.lat!=null).forEach(f=>L.circleMarker([f.lat,f.lon],{radius:6,color:'#16312C',weight:2,fillColor:'#9FB5AF',fillOpacity:1})
     .bindTooltip(`광령리 실측 대상 농장 (악취조사 DB)<br>데이터허브 목록에 없음 → 목록 갱신 필요<br><span class="muted">위치: ${esc(f.coord_source)}</span>`).addTo(farmLayer));
 }
-function speak(t){const u=new SpeechSynthesisUtterance(t);u.lang='ko-KR';speechSynthesis.cancel();speechSynthesis.speak(u)}
+// ---- Agent 행동 기록: 동작별로 묶어 보기 (할 일 → 시청 → 민원서 → 농장별)
+const openK=new Set(['todo','city','farm']);          // 펼쳐 둔 단락 (2초마다 다시 그려도 유지)
+let actSig='';
+const tm=ts=>`${ts.slice(5,10).replace('-','/')} ${ts.slice(11,16)}`;
+function det(k,sum,body,cls=''){
+  return `<details class="${cls}" data-k="${k}"${openK.has(k)?' open':''}><summary>${sum}</summary>${body}</details>`;
+}
+document.addEventListener('toggle',e=>{const k=e.target.dataset?.k;if(k)e.target.open?openK.add(k):openK.delete(k)},true);
+function sec(k,icon,title,summary,body){
+  return det(k,`<span class="ai">${icon}</span><b>${title}</b><span class="as">${summary}</span>`,`<div class="ab">${body}</div>`,'asec');
+}
+function drawActions(s){
+  const el=document.getElementById('actions'), A=s.actions, inbox=s.farm_inbox||{};
+  const sig=JSON.stringify([A.map(a=>[a.id,a.status,a.approved_at||'']),inbox]);
+  if(sig===actSig) return; actSig=sig;
+  // 농장은 이름 대신 A·B·C (위치가 확인된 실측 농장 순서, 늘 같은 글자)
+  const fl={}; s.farms.filter(f=>f.lat!=null).forEach((f,i)=>fl[f.farm_id]='농장 '+'ABCDEFGHIJ'[i]);
+  const calls=A.filter(a=>a.type==='city_call'), sms=A.filter(a=>a.type==='sms');
+  const comps=A.filter(a=>a.type==='complaint'), pend=comps.filter(a=>!a.approved_at), done=comps.filter(a=>a.approved_at);
+  const fids=Object.keys(inbox).filter(f=>inbox[f].length).sort();
+  const nAlert=fids.reduce((n,f)=>n+inbox[f].length,0), nResp=fids.reduce((n,f)=>n+inbox[f].filter(a=>a.response).length,0);
+  if(!calls.length&&!comps.length&&!nAlert){el.innerHTML='<span class="muted">아직 없음</span>';return}
+  let h=`<div class="achips">
+    <span>📞 시청 전달 <b>${calls.length}</b></span>
+    <span>📝 민원서 <b>${comps.length}</b>${pend.length?` <em>승인 대기 ${pend.length}</em>`:''}</span>
+    <span>🐖 농장 알림 <b>${fids.length}곳</b> · 응답 ${nResp}/${nAlert}</span></div>`;
+  if(pend.length) h+=sec('todo','⚠','지금 할 일',`민원서 승인 대기 ${pend.length}건`,
+    pend.map(a=>`<div class="aitem urgent"><div class="ah"><b>${esc(a.village)}</b> 민원서 · 작성 ${tm(a.ts)}</div>
+      ${det('ct'+a.id,'민원서 내용 보기',`<pre>${esc(a.payload.text)}</pre>`,'atext')}
+      <button onclick="approve(${a.id})">마을 대표 승인 → 제출</button></div>`).join(''));
+  if(calls.length) h+=sec('city','📞','시청 (대표 민원 전화 · 문자)',`${calls.length}건 · 마지막 ${tm(calls[0].ts)}`,
+    calls.slice(0,5).map(c=>{
+      const m=sms.some(x=>x.incident_id===c.incident_id&&x.village===c.village&&x.ts===c.ts);
+      return `<div class="aitem"><div class="ah"><b>${esc(c.village)}</b> · ${tm(c.ts)} <span class="ok">전화 ✓</span>${m?' <span class="ok">문자 ✓</span>':''}</div>
+        ${det('cs'+c.id,'통화 내용',`<div class="atx">${esc(c.payload.script)}</div>`,'atext')}
+        <button class="sm" onclick="speak(${JSON.stringify(c.payload.script).replace(/"/g,'&quot;')})" title="다시 누르면 멈춤">🔊 듣기</button> <span class="muted" style="font-size:12px">${voiceNote()}</span></div>`}).join('')
+    +(calls.length>5?`<div class="muted">이전 ${calls.length-5}건은 통계 화면의 사건별 처리 기록에서</div>`:''));
+  if(done.length) h+=sec('comp','📝','민원서 제출',`${done.length}건`,
+    done.slice(0,5).map(a=>`<div class="aitem"><div class="ah"><b>${esc(a.village)}</b> · 작성 ${tm(a.ts)} → 승인 ${tm(a.approved_at)}</div>
+      ${det('cd'+a.id,'내용 보기',`<pre>${esc(a.payload.text)}</pre>`,'atext')}</div>`).join(''));
+  if(fids.length) h+=sec('farm','🐖','농장 주의 알림 · 응답',`${fids.length}곳 · 응답 ${nResp}/${nAlert}`,
+    `<div class="fgrid">${fids.map(fid=>{
+      const box=[...inbox[fid]].sort((a,b)=>b.ts.localeCompare(a.ts)), last=box[0], nr=box.filter(a=>a.response).length;
+      const st=last.response?`<span class="ok">✓ ${esc(last.response)} · ${last.responded_at.slice(11,16)}</span>`:`<span class="wait">응답 대기</span>`;
+      return `<div class="fcard"><div class="fh"><b>${fl[fid]||fid}</b><span class="muted">알림 ${box.length} · 응답 ${nr}</span></div>
+        <div class="fl">${tm(last.ts)} · ${esc(last.village)} 신고로 알림</div><div>${st}</div>
+        ${box.length>1?det('fh'+fid,`지난 기록 ${box.length-1}건`,box.slice(1,10).map(a=>`<div class="fl">${tm(a.ts)} · ${esc(a.village)} → ${a.response?esc(a.response):'응답 없음'}</div>`).join(''),'atext'):''}</div>`}).join('')}</div>
+     <p class="muted" style="margin:6px 0 0">농장 이름은 표시하지 않습니다(농장주는 농장주 화면에서 각자 확인).<br>보낸 문구: “${esc(inbox[fids[0]][0].message)}”</p>`);
+  el.innerHTML=h;
+}
+// ---- 통화 듣기: 가장 자연스러운 한국어 목소리를 골라, 한 줄씩 끊어 사람처럼 읽는다
+let VOICE=null;
+function pickVoice(){
+  if(!('speechSynthesis' in window)) return null;
+  const ko=speechSynthesis.getVoices().filter(v=>(v.lang||'').toLowerCase().startsWith('ko'));
+  for(const p of [/(선히|SunHi).*Natural/i,/(인준|InJoon).*Natural/i,/Hyunsu.*Natural/i,/Natural/i,/Online/i,/Google/i]){
+    const v=ko.find(v=>p.test(v.name)); if(v) return v;
+  }
+  return ko[0]||null;
+}
+const voiceNote=()=>!VOICE?'한국어 음성 없음':/Natural|Google/i.test(VOICE.name)?`목소리: ${VOICE.name.replace(/Microsoft |Online |- Korean \(Korea\)|\(Natural\)/g,'').trim()}`:'더 자연스러운 목소리는 Edge 브라우저에서 들을 수 있습니다';
+if('speechSynthesis' in window){ VOICE=pickVoice(); speechSynthesis.onvoiceschanged=()=>{VOICE=pickVoice();actSig='';lastState&&drawActions(lastState)}; }
+function speak(t){
+  if(speechSynthesis.speaking){speechSynthesis.cancel();return}      // 다시 누르면 멈춤
+  const lines=t.split(/\n+|(?<=[.?!])\s+/).map(x=>x.trim()).filter(Boolean);
+  let i=0;
+  const next=()=>{
+    if(i>=lines.length) return;
+    const s=lines[i++], u=new SpeechSynthesisUtterance(s);
+    u.lang='ko-KR'; if(VOICE) u.voice=VOICE; u.rate=1.03; u.pitch=1.02;
+    u.onend=()=>setTimeout(next, s.endsWith('?')?1200:350);   // 물음표 뒤엔 상대가 대답할 틈
+    speechSynthesis.speak(u);
+  };
+  next();
+}
 async function approve(id){await fetch(`/api/complaint/${id}/approve`,{method:'POST'});load()}
 async function demo(k){
   if(k==='play') await fetch('/api/demo/play',{method:'POST'});
   if(k==='later') await fetch('/api/demo/play?name=gwangryeong_3h_later',{method:'POST'});
   if(k==='advance') await fetch('/api/demo/advance?minutes=180',{method:'POST'});
   if(k==='reset') await fetch('/api/demo/reset',{method:'POST'});
-  load();
+  load(); loadRecent();
 }
 let actCount=-1;
 async function load(){
   const s=await (await fetch('/api/state')).json();
   document.getElementById('clock').textContent=s.now.replace('T',' ');
-  document.getElementById('wind').textContent=`${s.wind.label} ${s.wind.speed}m/s (${s.wind.source})`;
-  lastState=s; drawWind(s.wind); drawFarms(s); drawVillages(s);
+  lastState=s; drawFarms(s); drawVillages(s);
   document.getElementById('villages').innerHTML=s.villages.map(v=>
     `<div class="row vrow" onclick="focusVillage('${v.village}')" title="지도에서 보기"><b>${v.village}</b><span>${v.n}명 · 평균 ${v.avg} · 1천명당 ${v.per_1000}</span><span class="badge s${v.stage}">${v.stage} ${v.stage_name}</span></div>`).join('');
-  const label={farm_alert:'농장 주의 알림',city_call:'대표 민원 전화',sms:'문자',complaint:'민원서 초안',farm_response:'농장 응답'};
-  document.getElementById('actions').innerHTML=s.actions.length?s.actions.map(a=>{
-    let body='';
-    if(a.type==='city_call') body=`${esc(a.payload.script)}<br><button onclick="speak(${JSON.stringify(a.payload.script).replace(/"/g,'&quot;')})">🔊 전화 내용 듣기</button>`;
-    else if(a.type==='sms') body=esc(a.payload.text);
-    else if(a.type==='farm_alert') body=`대상: 바람 위쪽 농장 ${a.payload.farm_count}곳 (농장 이름은 표시하지 않음)\n${esc(a.payload.message)}`;
-    else if(a.type==='complaint') body=esc(a.payload.text)+(a.status.includes('대기')?`<br><button onclick="approve(${a.id})">마을 대표 승인</button>`:'');
-    else if(a.type==='farm_response') body=`${a.payload.farm_id}: ${esc(a.payload.response)}`;
-    return `<div class="act ${a.type}"><b>${label[a.type]||a.type}</b> · ${a.village} · ${a.ts.slice(5,10).replace('-','/')} ${a.ts.slice(11,16)} · <span class="muted">${a.status}</span>\n${body}</div>`}).join(''):'아직 없음';
+  drawActions(s);
   document.getElementById('reports').innerHTML=s.reports.length?s.reports.slice(0,15).map(r=>
-    `<div class="row"><span>“${esc(r.text)}”</span><span class="muted">${r.village} · 강도 ${r.intensity} · ${r.time} · ${r.parser}</span></div>`).join(''):'아직 없음';
+    `<div class="row"><span>“${esc(r.text)}”</span><span class="muted">${r.village} · 강도 ${r.intensity} · ${r.time}</span></div>`).join(''):'아직 없음';
 }
 fetch('/api/health').then(r=>r.json()).then(h=>document.getElementById('llm').textContent='해석: '+h.llm);
-fetch('/api/stats/overview').then(r=>r.json()).then(st=>{
-  document.getElementById('stats').innerHTML=Object.entries(st.over15_rate_by_year).map(([y,v])=>
-   `<div class="row"><span style="width:60px">${y}</span><div style="flex:1"><div class="bar" style="width:${v*4}%"></div></div><span>${v}%</span></div>`).join('');
-});
+// ---- 최근 신고 현황 (24시간 / 이번 달 / 3개월) — /api/stats/reports 재사용
+let recentP='24h';
+try{recentP=localStorage.getItem('recentP')||'24h'}catch{}
+if(['24h','month','3m'].includes(new URLSearchParams(location.search).get('recent'))) recentP=new URLSearchParams(location.search).get('recent');
+const monthStart=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-01`};
+const qOf=p=>p==='24h'?'days=1':p==='3m'?'days=90':`days=0&since=${monthStart()}`;   // 이번 달 = 1일 0시부터
+const linkOf=p=>p==='24h'?'1':p==='3m'?'90':'month';
+async function loadRecent(){
+  const days=linkOf(recentP);
+  const s=await (await fetch(`/api/stats/reports?${qOf(recentP)}`)).json();
+  const k=s.kpi, el=document.getElementById('recent');
+  document.querySelectorAll('#recentSeg button').forEach(b=>b.classList.toggle('on',b.dataset.p===recentP));
+  const alarm=s.stage_counts.filter(x=>x.stage>=2).reduce((a,x)=>a+x.n,0);
+  const kpis=`<div class="rk"><div><b>${k.reports}</b><span>신고</span></div><div><b>${k.people}</b><span>신고 주민</span></div>
+    <div><b>${alarm}</b><span>경보 이상 사건</span></div><div><b>${k.calls}</b><span>대표 민원 전화</span></div></div>`;
+  if(!k.reports){
+    el.innerHTML=kpis+`<p class="muted">이 기간에는 신고가 없습니다.${recentP!=='24h'?' 통계 화면의 [가상 한 달 기록 불러오기]로 시연 기록을 만들 수 있습니다.':''}</p>`+foot(days,s);
+    return;
+  }
+  // 막대: 24시간은 시간별(지금부터 거꾸로 24칸), 그 외는 날짜별
+  let bars, xl;
+  if(recentP==='24h'){
+    const h=Array(24).fill(0); s.heat.forEach(r=>r.hours.forEach((n,i)=>h[i]+=n));
+    const now=new Date(s.now).getHours(), order=[...Array(24)].map((_,i)=>(now+1+i)%24);
+    bars=order.map(i=>({n:h[i],t:`${i}시`})); xl=[`${order[0]}시`,`${order[12]}시`,'지금'];
+  }else{
+    bars=s.daily.map(d=>({n:d.n,t:d.date.slice(5).replace('-','/')}));
+    xl=[bars[0].t,bars[Math.floor(bars.length/2)].t,bars.at(-1).t];
+  }
+  const mx=Math.max(1,...bars.map(b=>b.n));
+  const vmx=Math.max(1,...s.by_village.map(v=>v.reports));
+  el.innerHTML=kpis
+    +`<div class="rbars">${bars.map(b=>`<i class="${b.n?'':'z'}" style="height:${b.n/mx*100}%" title="${b.t} · 신고 ${b.n}건"></i>`).join('')}</div>`
+    +`<div class="rx">${xl.map(x=>`<span>${x}</span>`).join('')}</div>`
+    +s.by_village.map(v=>`<div class="rv"><b>${esc(v.village)}</b><div class="t"><i style="width:${v.reports/vmx*100}%"></i></div>
+       <span class="n">${v.reports}건</span>${v.max_stage!=null?`<span class="badge s${v.max_stage}" style="font-size:11px;padding:1px 8px">${STAGE[v.max_stage]}</span>`:'<span class="muted" style="width:40px">-</span>'}</div>`).join('')
+    +foot(days,s);
+}
+function foot(days,s){
+  const quiet=recentP!=='24h'?`신고 없는 날 ${s.kpi.quiet_days}/${s.kpi.days_total}일`:`첫 신고→대표 전화 ${s.kpi.med_min_to_call!=null?s.kpi.med_min_to_call+'분':'-'}`;
+  return `<div class="rfoot"><span class="muted">${quiet}</span><a href="stats.html?days=${days}">📊 자세히 보기</a></div>`;
+}
+document.querySelectorAll('#recentSeg button').forEach(b=>b.onclick=()=>{recentP=b.dataset.p;try{localStorage.setItem('recentP',recentP)}catch{};loadRecent()});
+loadRecent(); setInterval(loadRecent,10000);
 load().then(()=>{
   const q=new URLSearchParams(location.search);
   if(q.get('village')) focusVillage(q.get('village'));

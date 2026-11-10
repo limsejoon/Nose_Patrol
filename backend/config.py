@@ -13,12 +13,11 @@ DATA_RAW = ROOT / "data" / "raw"
 DATA_PROCESSED = ROOT / "data" / "processed"
 DATA_DEMO = ROOT / "data" / "demo"
 
-# LLM: none(규칙 기반만) | anthropic | openai
+# LLM: none(규칙 기반만) | anthropic (Claude)
 LLM_PROVIDER = os.getenv("LLM_PROVIDER", "none").lower()
 LLM_MODEL = os.getenv("LLM_MODEL", "")
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
-LLM_TIMEOUT = float(os.getenv("LLM_TIMEOUT", "8"))
+LLM_TIMEOUT = float(os.getenv("LLM_TIMEOUT", "30"))
 
 # 기상청 API (없으면 기본 풍향 사용)
 KMA_API_KEY = os.getenv("KMA_API_KEY", "")

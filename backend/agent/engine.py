@@ -1,7 +1,7 @@
 """냄새알림 Agent 판단 엔진.
 신고 해석 → 사건 묶기(같은 마을·최근 1시간) → 단계 판단 → 행동(농장 알림 / 대표 민원 전화 / 민원서 초안).
 숫자는 모두 여기와 tools가 계산한다. LLM은 문장 해석에만 쓴다.
-원인 농장은 화면·문안에 추정하거나 표시하지 않는다(명예훼손 방지). 풍향 계산은 주의 알림을 보낼
+원인 농장과 풍향은 화면·문안에 표시하지 않는다(명예훼손 방지). 풍향 계산은 주의 알림을 보낼
 바람 위쪽 농장을 고르는 데만 내부적으로 쓴다."""
 import itertools
 from datetime import datetime, timedelta
@@ -92,7 +92,7 @@ def _escalate(village, st):
     cands = geo.rank_sources(v["lat"], v["lon"], wind) if v else []
     done = []
     if st["stage"] >= 1 and not inc["farm_alert_sent"] and cands:  # 바람 위쪽 농장이 없으면 보내지 않는다
-        msg = drafts.farm_alert(village, st["n"], wind)
+        msg = drafts.farm_alert(village, st["n"])
         for c in cands:
             alert = {"id": next(_id), "ts": now.isoformat(timespec="seconds"), "village": village,
                      "message": msg, "response": None, "incident_id": inc["id"]}
@@ -102,9 +102,9 @@ def _escalate(village, st):
         done.append("farm_alert")
     if st["n"] >= config.ALARM_MIN_PEOPLE and (inc["last_call"] is None or now - inc["last_call"] >= timedelta(hours=config.PERSIST_HOURS)):
         _act("city_call", village, {"to": "제주시 담당부서(사전 등록 번호)",
-                                    "script": drafts.call_script(village, st["n"], st["avg"], wind)},
+                                    "script": drafts.call_script(village, st["n"], st["avg"])},
              status="발신 기록(대회판: 실제 발신 안 함)")
-        _act("sms", village, {"to": "제주시 담당부서", "text": drafts.sms(village, st["n"], st["avg"], wind)},
+        _act("sms", village, {"to": "제주시 담당부서", "text": drafts.sms(village, st["n"], st["avg"])},
              status="발송 기록(대회판)")
         inc["last_call"] = now
         inc["alarm_at"] = inc["alarm_at"] or now
@@ -118,7 +118,7 @@ def _escalate(village, st):
         if ov["n"]:
             y, rate = list(ov["over15_rate_by_year"].items())[-1]
             hist.append(f"광령리 측정구역 {y}년 15배 초과율 {rate}%")
-        a = _act("complaint", village, {"text": drafts.complaint(village, total, config.PERSIST_HOURS, wind, hist)},
+        a = _act("complaint", village, {"text": drafts.complaint(village, total, config.PERSIST_HOURS, hist)},
                  status="마을 대표 승인 대기")
         inc["complaint_id"] = a["id"]
         done.append("complaint")
@@ -172,7 +172,7 @@ def handle_message(user: str, text: str, place_village: str | None = None) -> di
     elif "city_call" in done:
         reply += f"\n이웃 {st['n']}분이 같은 냄새를 신고해서, 주민 대표로 시청에 민원 전화를 넣었어요."
     elif "farm_alert" in done:
-        reply += "\n바람 위쪽 농장에 저감시설 점검을 요청했어요."
+        reply += "\n주변 농장에 저감시설 점검을 요청했어요."
     return {"reply": reply, "parsed": p, "report_id": rep["id"], "stage_before": before, "status": st}
 
 

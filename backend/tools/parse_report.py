@@ -11,10 +11,28 @@ village(아래 목록 중 하나 또는 null), place(목록에 없는 지명이 
 숫자는 문장에서 근거를 찾을 수 있을 때만 쓴다. 추측하지 말고 모르면 null."""
 
 
+def _schema(village_names):
+    """구조화된 출력: Claude가 이 형식의 JSON만 내도록 강제한다."""
+    nullable = lambda s: {"anyOf": [s, {"type": "null"}]}
+    return {
+        "type": "object",
+        "properties": {
+            "is_report": {"type": "boolean"},
+            "intensity": {"type": "integer", "enum": [0, 1, 2, 3, 4, 5]},
+            "time": {"type": "string"},
+            "odor": nullable({"type": "string", "enum": ["축산"]}),
+            "village": nullable({"type": "string", "enum": list(village_names)}),
+            "place": nullable({"type": "string"}),
+        },
+        "required": ["is_report", "intensity", "time", "odor", "village", "place"],
+        "additionalProperties": False,
+    }
+
+
 def parse(text: str) -> dict:
     vs = data.villages()
-    names = ", ".join(v["village"] for v in vs)
-    out = llm.ask(SYSTEM.format(villages=names), text, want_json=True)
+    names = [v["village"] for v in vs]
+    out = llm.ask(SYSTEM.format(villages=", ".join(names)), text, schema=_schema(names), max_tokens=400)
     if isinstance(out, dict) and "intensity" in out:
         out["parser"] = "llm"
         try:
