@@ -14,7 +14,9 @@
   header .sp{flex:1} header button,header a{background:#1F4039;color:#F3F1EA;border:1px solid #3E5C55;border-radius:8px;padding:8px 12px;font-size:14px;cursor:pointer;text-decoration:none}
   body{display:flex;flex-direction:column;height:100vh}
   main{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;padding:16px;flex:1;min-height:0}
-  #map{border-radius:14px;height:100%}
+  #map{border-radius:14px;height:100%;background:#e9ecea}
+  #map.zlow .rlabel:not(.focus),#map.zlow .vm .vl{display:none}
+  #map.sat .rlabel{color:#fff;text-shadow:0 0 3px #000,0 0 6px #000}
   .panel{overflow:auto;display:flex;flex-direction:column;gap:12px}
   .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
   .card h3{margin:0 0 8px;font-size:16px}
@@ -26,14 +28,37 @@
   .act.city_call,.act.sms{border-color:var(--orange);background:#FBEBDD}.act.complaint{border-color:#7A2E0E}
   .act button{margin-top:6px;border:0;border-radius:6px;padding:6px 10px;background:var(--dark);color:#fff;cursor:pointer}
   .muted{color:var(--sub);font-size:13px}
-  .facm{background:#5B4A8B;color:#fff;border:2px solid #fff;border-radius:6px;text-align:center;font-weight:700;font-size:13px;box-shadow:0 1px 4px rgba(0,0,0,.35)}
-  .legend,.leaflet-container{color:var(--text)}
-  .legend{background:rgba(253,252,248,.95);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:12px;line-height:1.9}
-  .legend .lg{display:inline-block;vertical-align:middle;margin-right:4px}
-  .legend .vil{width:14px;height:14px;border-radius:50%;background:rgba(47,127,134,.35);border:2px solid #2F7F86}
-  .legend .farm{width:12px;height:12px;border-radius:50%;background:#9FB5AF;border:2px solid #16312C}
-  .legend .fac{width:18px;height:18px;line-height:15px;border-radius:4px;background:#5B4A8B;color:#fff;border:1.5px solid #fff;text-align:center;font-weight:700;font-size:11px}
-  .legend a{color:var(--teal)}
+  .facm{background:#5B4A8B;color:#fff;border:2px solid #fff;border-radius:6px;text-align:center;font-weight:700;font-size:12px;box-shadow:0 1px 4px rgba(0,0,0,.35)}
+  .leaflet-container{color:var(--text);font-family:inherit}
+  .legend,.mapctl,.windc{background:rgba(253,252,248,.96);border:1px solid var(--line);border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.12)}
+  .legend{padding:8px 12px;font-size:12px;line-height:1.5;display:flex;flex-direction:column;gap:4px}
+  .legend label{display:flex;align-items:center;gap:6px;cursor:pointer}
+  .legend .lg{display:inline-block;flex:none}
+  .legend .bnd{width:16px;height:10px;border:2.5px solid #1F6E74;background:rgba(47,127,134,.1);border-radius:2px}
+  .legend .vil{width:12px;height:12px;border-radius:50%;background:#D9772B;border:2px solid #fff;box-shadow:0 0 0 1px #999}
+  .legend .farm{width:10px;height:10px;border-radius:50%;background:#9FB5AF;border:2px solid #16312C}
+  .legend .fac{width:16px;height:16px;line-height:13px;border-radius:4px;background:#5B4A8B;color:#fff;border:1.5px solid #fff;text-align:center;font-weight:700;font-size:10px;font-style:normal}
+  .legend .stg{display:flex;gap:8px;margin:0 0 2px 22px;color:var(--sub)}
+  .legend .stg i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:3px;vertical-align:-1px}
+  .mapctl{display:flex;flex-direction:column;gap:6px;padding:6px;background:transparent;border:0;box-shadow:none}
+  .mapctl .seg{display:flex;background:rgba(253,252,248,.96);border:1px solid var(--line);border-radius:8px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.12)}
+  .mapctl button{border:0;background:none;padding:6px 11px;font:inherit;font-size:13px;cursor:pointer;color:var(--text)}
+  .mapctl button+button{border-left:1px solid var(--line)}
+  .mapctl button.on{background:var(--dark);color:#fff}
+  .windc{display:flex;align-items:center;gap:8px;padding:6px 10px 6px 6px;font-size:13px}
+  .windc svg{transition:transform .6s}
+  .windc small{display:block;color:var(--sub);font-size:11px}
+  .rlabel{display:inline-block;transform:translate(-50%,-50%);white-space:nowrap;font-size:12px;font-weight:600;color:#4c5754;text-shadow:0 0 3px #fff,0 0 6px #fff;pointer-events:none}
+  .rlabel.focus{font-size:15px;font-weight:800;color:#164f54;letter-spacing:.05em}
+  .vm{position:relative;width:var(--d);height:var(--d)}
+  .vm .dot{position:absolute;inset:0;border-radius:50%;background:var(--c);border:2.5px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.4)}
+  .vm.pulse::before{content:"";position:absolute;inset:-8px;border-radius:50%;border:3px solid var(--c);animation:pulse 1.6s ease-out infinite}
+  @keyframes pulse{from{transform:scale(.6);opacity:.9}to{transform:scale(1.6);opacity:0}}
+  .vm .vl{position:absolute;left:calc(100% + 6px);top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:4px;white-space:nowrap;background:rgba(255,255,255,.94);border-radius:12px;padding:2px 8px 2px 6px;font-size:12px;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+  .vm .vl em{font-style:normal;font-weight:700;color:#fff;background:var(--c);border-radius:8px;padding:0 6px}
+  .pp{margin:6px 0;font-size:13px;line-height:1.6}
+  .leaflet-popup-content a{color:var(--teal);font-weight:600}
+  .vrow{cursor:pointer}.vrow:hover{background:#F4F8F7}
   #ask{display:flex;gap:8px}#ask input{flex:1;padding:8px;border:1px solid var(--line);border-radius:8px}
 </style>
 </head>
@@ -61,39 +86,173 @@
 </main>
 <script>
 const STAGE=['관찰','주의','경보','지속'];
-const map=L.map('map').setView([33.4450,126.4330],13);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);
-const layer=L.layerGroup().addTo(map);        // 마을 신고 단계 (2초마다 갱신)
-const farmLayer=L.layerGroup().addTo(map);    // 광령리 실측 대상 농장
-const facLayer=L.layerGroup().addTo(map);     // 악취배출시설 (필수 데이터)
-L.control.layers(null,{'악취배출시설 (데이터허브)':facLayer,'광령리 실측 대상 농장':farmLayer},{collapsed:false,position:'topright'}).addTo(map);
+const STAGE_COLOR=['#8A9792','#2F7F86','#D9772B','#9C2F12'];
+const HOME=[33.4450,126.4330];
+const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const map=L.map('map',{zoomControl:false}).setView(HOME,13);
+L.control.zoom({position:'bottomright'}).addTo(map);
+map.attributionControl.setPrefix(false);
+map.attributionControl.addAttribution('경계 © OpenStreetMap contributors · 시설 제주데이터허브');
+// 멀리서 볼 때는 작은 이름표를 숨긴다 (jeju-map-demo 와 같은 방식)
+const zoomCls=()=>map.getContainer().classList.toggle('zlow',map.getZoom()<12);
+map.on('zoomend',zoomCls); zoomCls();
+
+// ---- 배경지도: 브이월드(회색·지도·위성), 키가 없으면 OpenStreetMap
+const OSM=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'});
+let bases={'지도':OSM}, baseNow=null;
+function setBase(name){
+  if(!bases[name]) name=Object.keys(bases)[0];
+  if(baseNow) map.removeLayer(bases[baseNow]);
+  bases[name].addTo(map); baseNow=name;
+  document.querySelectorAll('#baseSeg button').forEach(b=>b.classList.toggle('on',b.dataset.v===name));
+  document.getElementById('map').classList.toggle('sat',name==='위성');
+  try{localStorage.setItem('base',name)}catch{}
+}
+const baseCtl=L.control({position:'topright'});
+baseCtl.onAdd=()=>{const d=L.DomUtil.create('div','mapctl');d.innerHTML=
+  `<div class="seg" id="baseSeg"></div><div class="seg"><button id="vHome">광령리</button><button id="vAll">제주 전체 시설</button></div>`;
+  L.DomEvent.disableClickPropagation(d);return d};
+baseCtl.addTo(map);
+fetch('/api/mapconfig').then(r=>r.json()).then(c=>{
+  if(c.vworld){
+    const vw=(l,o={})=>L.tileLayer(`/tiles/${l}/{z}/{y}/{x}`,{maxZoom:19,attribution:'© 국토교통부 브이월드',...o});
+    bases={'회색':vw('white'),'지도':vw('Base'),'위성':L.layerGroup([vw('Satellite'),vw('Hybrid',{attribution:''})])};
+  }
+  document.getElementById('baseSeg').innerHTML=Object.keys(bases).map(n=>`<button data-v="${n}">${n}</button>`).join('');
+  document.querySelectorAll('#baseSeg button').forEach(b=>b.onclick=()=>setBase(b.dataset.v));
+  let saved=null; try{saved=localStorage.getItem('base')}catch{}
+  setBase(saved||Object.keys(bases)[0]);
+});
+
+// ---- 레이어
+const bndLayer=L.layerGroup().addTo(map), vilLayer=L.layerGroup().addTo(map),
+      facLayer=L.layerGroup().addTo(map), farmLayer=L.layerGroup().addTo(map);
+const LAYERS={bnd:bndLayer,vil:vilLayer,fac:facLayer,farm:farmLayer};
+
+// ---- 바람 (지도 왼쪽 위)
+const windCtl=L.control({position:'topleft'});
+windCtl.onAdd=()=>{const d=L.DomUtil.create('div','windc');d.id='windc';return d};
+windCtl.addTo(map);
+function drawWind(w){
+  const to=(w.from_deg+180)%360;
+  document.getElementById('windc').innerHTML=
+    `<svg viewBox="0 0 40 40" width="40" height="40" style="transform:rotate(${to}deg)"><circle cx="20" cy="20" r="18" fill="none" stroke="#c9d3cf"/><path d="M20 6 L28 22 L21 19 L21 33 L19 33 L19 19 L12 22 Z" fill="#16312C"/></svg>
+     <div><b>${esc(w.label)} ${w.speed}m/s</b><small>${esc(w.source)}</small></div>`;
+}
+
+// ---- 범례 + 켜고 끄기 (왼쪽 아래)
 const legend=L.control({position:'bottomleft'});
 legend.onAdd=()=>{const d=L.DomUtil.create('div','legend');d.innerHTML=
-  `<b>지도 보기</b><br><span class="lg vil"></span> 마을 (색 = 신고 단계)<br><span class="lg farm"></span> 광령리 실측 대상 농장<br>
-   <span class="lg fac">3</span> 악취배출시설 (숫자 = 같은 주소의 시설 수)<br><span class="muted">위치: 지번 주소 → 브이월드 좌표</span><br>
-   <a href="#" id="fitAll">▸ 제주 전체 시설 보기</a> · <a href="#" id="fitHome">광령리로</a>`;return d};
+  `<b>지도 보기</b>
+   <label><input type="checkbox" data-l="bnd" checked><i class="lg bnd"></i>리·동 경계 <span class="muted">(광령리 진하게)</span></label>
+   <label><input type="checkbox" data-l="vil" checked><i class="lg vil"></i>마을 · 신고 단계</label>
+   <div class="stg">${STAGE.map((n,i)=>`<span><i style="background:${STAGE_COLOR[i]}"></i>${n}</span>`).join('')}</div>
+   <label><input type="checkbox" data-l="fac" checked><i class="lg fac">3</i>악취배출시설 <span class="muted">(숫자 = 같은 주소)</span></label>
+   <label><input type="checkbox" data-l="farm" checked><i class="lg farm"></i>광령리 실측 대상 농장</label>`;
+  d.querySelectorAll('input').forEach(c=>c.onchange=()=>c.checked?LAYERS[c.dataset.l].addTo(map):map.removeLayer(LAYERS[c.dataset.l]));
+  L.DomEvent.disableClickPropagation(d);return d};
 legend.addTo(map);
-let facBounds=null;
-document.addEventListener('click',e=>{
-  if(e.target.id==='fitAll'){e.preventDefault();facBounds&&map.fitBounds(facBounds.pad(0.1))}
-  if(e.target.id==='fitHome'){e.preventDefault();map.setView([33.4450,126.4330],13)}
+
+// ---- 점이 어느 구역 안인지 (경계 다각형)
+function inRing(r,lon,lat){let c=false;for(let i=0,j=r.length-1;i<r.length;j=i++){const[xi,yi]=r[i],[xj,yj]=r[j];if((yi>lat)!==(yj>lat)&&lon<(xj-xi)*(lat-yi)/(yj-yi)+xi)c=!c}return c}
+const inFeature=(f,lat,lon)=>f.geometry.coordinates.some(p=>inRing(p[0],lon,lat));
+let BND=[], FAC=[], FARMS=[], homeBounds=null, facBounds=null, lastState=null;
+
+// ---- 리·동 경계
+fetch('/api/boundaries').then(r=>r.json()).then(g=>{
+  BND=g.features||[];
+  BND.forEach(f=>{
+    const p=f.properties, focus=p.focus;
+    const base=focus?{color:'#1F6E74',weight:3,fillColor:'#2F7F86',fillOpacity:.07}:{color:'#6E7B77',weight:1.2,dashArray:'4 4',fillColor:'#6E7B77',fillOpacity:0};
+    const lay=L.geoJSON(f,{style:base}).addTo(bndLayer);
+    lay.on('mouseover',()=>lay.setStyle({weight:base.weight+1.5,fillOpacity:focus?.12:.06}));
+    lay.on('mouseout',()=>lay.setStyle(base));
+    lay.bindPopup(()=>areaPopup(f));
+    L.marker([p.label[1],p.label[0]],{interactive:false,icon:L.divIcon({className:'',html:`<span class="rlabel${focus?' focus':''}">${esc(p.name)}</span>`,iconSize:null})}).addTo(bndLayer);
+  });
 });
+function areaPopup(f){
+  const p=f.properties;
+  const fac=FAC.filter(g=>inFeature(f,g.lat,g.lon)).reduce((s,g)=>s+g.count,0);
+  const farms=FARMS.filter(x=>x.lat!=null&&inFeature(f,x.lat,x.lon)).length;
+  const vils=(lastState?.villages||[]).filter(v=>inFeature(f,v.lat,v.lon));
+  return `<b>${esc(p.name)}</b> · ${p.area_km2} km²
+    <div class="pp">마을 ${vils.length?vils.map(v=>`${esc(v.village)}(${STAGE[v.stage]})`).join(', '):'-'}<br>
+    악취배출시설 ${fac}곳 · 실측 대상 농장 ${farms}곳</div>
+    <div class="muted">경계: © OpenStreetMap contributors</div>`;
+}
+
+// ---- 악취배출시설
 fetch('/api/facilities').then(r=>r.json()).then(fc=>{
+  FAC=fc.groups;
   const pts=[];
   fc.groups.forEach(g=>{
-    const size=Math.round(22+Math.sqrt(g.count)*6);
-    const icon=L.divIcon({className:'',html:`<div class="facm" style="width:${size}px;height:${size}px;line-height:${size}px">${g.count}</div>`,iconSize:[size,size],iconAnchor:[size/2,size/2]});
+    const size=Math.round(20+Math.sqrt(g.count)*5);
+    const icon=L.divIcon({className:'',html:`<div class="facm" style="width:${size}px;height:${size}px;line-height:${size-4}px">${g.count}</div>`,iconSize:[size,size],iconAnchor:[size/2,size/2]});
     const lines=g.items.map(it=>`${it['사업장명']?esc(it['사업장명'])+' · ':''}${it['구분']} · 부지 ${Number(it['부지면적']).toLocaleString()}㎡${it['중복의심']?' · <i>'+esc(it['중복의심'])+'</i>':''}`);
     L.marker([g.lat,g.lon],{icon}).bindTooltip(
-      `${g.emd} ${g.ri} · 악취배출시설 ${g.count}곳<br>악취관리지역 안 ${g.in_area}곳 · 부지 합계 ${Math.round(g.area_m2).toLocaleString()}㎡${g.dup?`<br>중복 의심 ${g.dup}곳`:''}<br><span style="opacity:.7">위치: ${g.precision}</span>`)
-     .bindPopup(`<b>${g.emd} ${g.ri}</b> · ${g.count}곳<div style="max-height:220px;overflow:auto;font-size:13px">${lines.join('<br>')}</div><div class="muted" style="margin-top:6px">${esc(fc.source)}${fc.show_names?'':'<br>사업장명은 표시하지 않습니다'}</div>`)
+      `${g.emd} ${g.ri} · 악취배출시설 ${g.count}곳<br>악취관리지역 안 ${g.in_area}곳 · 부지 ${Math.round(g.area_m2).toLocaleString()}㎡${g.dup?`<br>중복 의심 ${g.dup}곳`:''}`)
+     .bindPopup(`<b>${g.emd} ${g.ri}</b> · ${g.count}곳<div class="pp">${lines.join('<br>')}</div><div class="muted">${esc(fc.source)} · 위치: ${esc(g.precision)}${fc.show_names?'':'<br>사업장명은 표시하지 않습니다'}</div>`)
      .addTo(facLayer);
     pts.push([g.lat,g.lon]);
   });
   if(pts.length) facBounds=L.latLngBounds(pts);
 });
-const color=s=>['#8A9792','#2F7F86','#B85A1A','#7A2E0E'][s];
-const esc=t=>String(t).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+document.addEventListener('click',e=>{
+  if(e.target.id==='vAll'){facBounds&&map.flyToBounds(facBounds.pad(0.08),{duration:.8});setUrl(null)}
+  if(e.target.id==='vHome'){homeBounds?map.flyToBounds(homeBounds,{duration:.8}):map.flyTo(HOME,13);setUrl(null)}
+});
+
+// ---- 마을 (한 번 만들고 단계·인원만 바꾼다 → 깜빡임 없음, 열린 창 유지)
+const vilMarkers=new Map();
+function vilIcon(v){
+  const d=Math.round(14+Math.min(v.n,20)*1.3);
+  return L.divIcon({className:'',iconSize:[d,d],iconAnchor:[d/2,d/2],html:
+    `<div class="vm vs${v.stage}${v.stage>=2?' pulse':''}" style="--d:${d}px;--c:${STAGE_COLOR[v.stage]}"><span class="dot"></span>
+     <span class="vl"><b>${esc(v.village)}</b><em>${v.stage} ${STAGE[v.stage]}</em>${v.n?`<span>${v.n}명</span>`:''}</span></div>`});
+}
+function vilPopup(name){
+  const s=lastState, v=s.villages.find(x=>x.village===name); if(!v) return '';
+  const today=s.now.slice(0,10);
+  const nToday=s.reports.filter(r=>r.village===name&&r.ts.slice(0,10)===today).length;
+  const lastAct=s.actions.find(a=>a.village===name);
+  const label={farm_alert:'농장 주의 알림',city_call:'대표 민원 전화',sms:'문자',complaint:'민원서',farm_response:'농장 응답'};
+  return `<b>${esc(name)}</b> <span class="badge s${v.stage}">${v.stage} ${STAGE[v.stage]}</span>
+    <div class="pp">최근 1시간 신고 주민 <b>${v.n}명</b> · 평균 강도 ${v.avg}<br>인구 1천 명당 ${v.per_1000}명 · 오늘 신고 ${nToday}건<br>
+    마지막 처리: ${lastAct?`${label[lastAct.type]||lastAct.type} (${lastAct.ts.slice(11,16)})`:'없음'}</div>
+    <a href="stats.html?village=${encodeURIComponent(name)}">📊 이 마을 통계 보기</a>`;
+}
+function drawVillages(s){
+  s.villages.forEach(v=>{
+    const key=`${v.stage}|${v.n}`;
+    let m=vilMarkers.get(v.village);
+    if(!m){
+      m=L.marker([v.lat,v.lon],{icon:vilIcon(v),zIndexOffset:500}).addTo(vilLayer);
+      m.bindPopup(()=>vilPopup(v.village),{minWidth:220});
+      m.on('click',()=>setUrl(v.village));
+      m._key=key; vilMarkers.set(v.village,m);
+    } else if(m._key!==key){ m.setIcon(vilIcon(v)); m._key=key; if(m.isPopupOpen()) m.setPopupContent(vilPopup(v.village)); }
+  });
+}
+function focusVillage(name){
+  const m=vilMarkers.get(name); if(!m) return;
+  map.flyTo(m.getLatLng(),15,{duration:.8});
+  map.once('moveend',()=>m.openPopup());
+  setUrl(name);
+}
+function setUrl(village){ history.replaceState(null,'',village?`?village=${encodeURIComponent(village)}`:location.pathname); }
+
+// ---- 실측 대상 농장 (이름 없이)
+function drawFarms(s){
+  if(farmLayer.getLayers().length) return;
+  FARMS=s.farms;
+  // 처음 보기: 마을 3곳과 실측 농장(양돈단지)이 한 화면에 들어오게
+  homeBounds=L.latLngBounds([...s.villages,...s.farms.filter(f=>f.lat!=null)].map(x=>[x.lat,x.lon])).pad(0.3);
+  const q=new URLSearchParams(location.search);
+  if(!q.get('village')&&q.get('view')!=='all') map.fitBounds(homeBounds);
+  s.farms.filter(f=>f.lat!=null).forEach(f=>L.circleMarker([f.lat,f.lon],{radius:6,color:'#16312C',weight:2,fillColor:'#9FB5AF',fillOpacity:1})
+    .bindTooltip(`광령리 실측 대상 농장 (악취조사 DB)<br>데이터허브 목록에 없음 → 목록 갱신 필요<br><span class="muted">위치: ${esc(f.coord_source)}</span>`).addTo(farmLayer));
+}
 function speak(t){const u=new SpeechSynthesisUtterance(t);u.lang='ko-KR';speechSynthesis.cancel();speechSynthesis.speak(u)}
 async function approve(id){await fetch(`/api/complaint/${id}/approve`,{method:'POST'});load()}
 async function demo(k){
@@ -108,12 +267,9 @@ async function load(){
   const s=await (await fetch('/api/state')).json();
   document.getElementById('clock').textContent=s.now.replace('T',' ');
   document.getElementById('wind').textContent=`${s.wind.label} ${s.wind.speed}m/s (${s.wind.source})`;
-  layer.clearLayers();
-  if(!farmLayer.getLayers().length) s.farms.filter(f=>f.lat!=null).forEach(f=>L.circleMarker([f.lat,f.lon],{radius:8,color:'#16312C',weight:2,fillColor:'#9FB5AF',fillOpacity:1})
-    .bindTooltip(`광령리 실측 대상 농장<br>데이터허브 목록에 없음 (목록 갱신 필요)<br><span style="opacity:.7">위치: ${esc(f.coord_source)}</span>`).addTo(farmLayer));
-  s.villages.forEach(v=>L.circle([v.lat,v.lon],{radius:180+v.n*25,color:color(v.stage),fillOpacity:.35}).bindTooltip(`${v.village} · ${v.stage_name} · ${v.n}명`).addTo(layer));
+  lastState=s; drawWind(s.wind); drawFarms(s); drawVillages(s);
   document.getElementById('villages').innerHTML=s.villages.map(v=>
-    `<div class="row"><b>${v.village}</b><span>${v.n}명 · 평균 ${v.avg} · 1천명당 ${v.per_1000}</span><span class="badge s${v.stage}">${v.stage} ${v.stage_name}</span></div>`).join('');
+    `<div class="row vrow" onclick="focusVillage('${v.village}')" title="지도에서 보기"><b>${v.village}</b><span>${v.n}명 · 평균 ${v.avg} · 1천명당 ${v.per_1000}</span><span class="badge s${v.stage}">${v.stage} ${v.stage_name}</span></div>`).join('');
   const label={farm_alert:'농장 주의 알림',city_call:'대표 민원 전화',sms:'문자',complaint:'민원서 초안',farm_response:'농장 응답'};
   document.getElementById('actions').innerHTML=s.actions.length?s.actions.map(a=>{
     let body='';
@@ -131,7 +287,12 @@ fetch('/api/stats/overview').then(r=>r.json()).then(st=>{
   document.getElementById('stats').innerHTML=Object.entries(st.over15_rate_by_year).map(([y,v])=>
    `<div class="row"><span style="width:60px">${y}</span><div style="flex:1"><div class="bar" style="width:${v*4}%"></div></div><span>${v}%</span></div>`).join('');
 });
-load(); setInterval(load,2000);
+load().then(()=>{
+  const q=new URLSearchParams(location.search);
+  if(q.get('village')) focusVillage(q.get('village'));
+  if(q.get('view')==='all') setTimeout(()=>facBounds&&map.fitBounds(facBounds.pad(0.08)),600);
+});
+setInterval(load,2000);
 </script>
 </body>
 </html>

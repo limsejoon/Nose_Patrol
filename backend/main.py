@@ -3,7 +3,8 @@
 import json
 from datetime import timedelta
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import RedirectResponse
+import httpx
+from fastapi.responses import RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from backend import config, data
@@ -59,6 +60,47 @@ def approve(action_id: int):
 @app.get("/api/stats/overview")
 def stats():
     return history.overview()
+
+
+# ---- 지도 ----
+VWORLD_LAYERS = {"white": "png", "Base": "png", "Satellite": "jpeg", "Hybrid": "png"}
+
+
+@app.get("/api/mapconfig")
+def mapconfig():
+    return {"vworld": bool(config.VWORLD_API_KEY),
+            "layers": list(VWORLD_LAYERS) if config.VWORLD_API_KEY else []}
+
+
+@app.get("/tiles/{layer}/{z}/{y}/{x}")
+def tile(layer: str, z: int, y: int, x: int):
+    """브이월드 배경지도 타일을 대신 받아 준다. 키를 화면에 노출하지 않고, 한 번 본 타일은 PC에 저장해
+    다음부터 인터넷 없이 보인다."""
+    ext = VWORLD_LAYERS.get(layer)
+    if not ext or not config.VWORLD_API_KEY or not (0 <= z <= 19):
+        raise HTTPException(404)
+    path = config.TILE_CACHE / layer / str(z) / str(y) / f"{x}.{ext}"
+    media = "image/jpeg" if ext == "jpeg" else "image/png"
+    if not path.exists():
+        try:
+            r = httpx.get(f"https://api.vworld.kr/req/wmts/1.0.0/{config.VWORLD_API_KEY}/{layer}/{z}/{y}/{x}.{ext}",
+                          timeout=10, headers={"User-Agent": "nose-patrol/0.1"})
+        except httpx.HTTPError:
+            raise HTTPException(504, "브이월드 연결 실패")
+        if r.status_code != 200 or not r.headers.get("content-type", "").startswith("image"):
+            raise HTTPException(404)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(r.content)
+    return Response(path.read_bytes(), media_type=media, headers={"Cache-Control": "public, max-age=604800"})
+
+
+@app.get("/api/boundaries")
+def boundaries():
+    """리·동 경계 (OpenStreetMap, scripts/prepare_boundaries.py 로 만든다)."""
+    p = config.DATA_PROCESSED / "boundaries.geojson"
+    if not p.exists():
+        return {"type": "FeatureCollection", "features": []}
+    return Response(p.read_bytes(), media_type="application/geo+json")
 
 
 @app.get("/api/facilities")

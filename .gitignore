@@ -7,3 +7,6 @@ data/processed/*
 # 제출물에 포함해야 하는 전처리 결과 (센터 PC가 인터넷 없이 쓰도록)
 !data/processed/facilities.csv
 !data/processed/geocode_cache.json
+!data/processed/boundaries.geojson
+# 브이월드 타일 저장소 (PC마다 새로 받음)
+data/processed/tiles/

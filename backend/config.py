@@ -32,5 +32,9 @@ ALARM_MIN_PEOPLE = int(os.getenv("ALARM_MIN_PEOPLE", "10"))
 CAUTION_AVG_INTENSITY = float(os.getenv("CAUTION_AVG_INTENSITY", "4"))
 PERSIST_HOURS = float(os.getenv("PERSIST_HOURS", "3"))    # 지속 단계, 재발신 대기
 
+# 브이월드: 배경지도 타일(서버가 대신 받아 PC에 저장) · 지번 주소 → 좌표
+VWORLD_API_KEY = os.getenv("VWORLD_API_KEY", "")
+TILE_CACHE = DATA_PROCESSED / "tiles"
+
 # 지도에 악취배출시설 사업장명을 보일지 (기본: 숨김 — 신고 지점과 나란히 보이면 원인 지목으로 읽힐 수 있음)
 FACILITY_SHOW_NAMES = os.getenv("FACILITY_SHOW_NAMES", "false").lower() == "true"

@@ -122,7 +122,7 @@ const STAGE_COLOR=['#8A9792','#2F7F86','#B85A1A','#7A2E0E'];
 const HEAT=['var(--h0)','var(--h1)','var(--h2)','var(--h3)','var(--h4)','var(--h5)'];
 const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fmtMin=m=>m==null?'–':(m<60?`${m}분`:`${Math.floor(m/60)}시간${m%60?` ${m%60}분`:''}`);
-let F={days:'30',village:''};
+let F={days:'30',village:new URLSearchParams(location.search).get('village')||''};   // 센터 화면에서 마을을 눌러 오면 그 마을로
 
 // 공용 툴팁
 const tip=document.getElementById('tip');
@@ -154,7 +154,8 @@ async function load(){
   if(!villagesInit){
     const box=document.getElementById('fVillage');
     (await (await fetch('/api/stats/reports?days=0')).json()).villages.forEach(v=>{
-      const b=document.createElement('button');b.dataset.v=v;b.textContent=v;box.appendChild(b)});
+      const b=document.createElement('button');b.dataset.v=v;b.textContent=v;b.classList.toggle('on',v===F.village);box.appendChild(b)});
+    if(F.village) box.querySelector('button[data-v=""]').classList.remove('on');
     villagesInit=true;
   }
   document.getElementById('simNote').innerHTML=s.simulated?'<span class="sim">가상 신고 기록이 포함되어 있습니다 (대회판 시연용)</span>':'';

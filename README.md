@@ -18,7 +18,7 @@ python -m uvicorn backend.main:app --reload --port 8000
 ## 화면
 | 주소 | 내용 |
 |---|---|
-| `/index.html` | 센터 화면: 지도(마을 신고 단계 · 악취배출시설 · 실측 대상 농장), 마을별 단계, Agent 행동 기록, 실측 통계 |
+| `/index.html` | 센터 화면: 지도(배경 회색·지도·위성, 리·동 경계, 마을 신고 단계, 바람, 악취배출시설, 실측 대상 농장), 마을별 단계, Agent 행동 기록, 실측 통계. 마을을 누르면 요약과 [이 마을 통계 보기] |
 | `/stats.html` | 신고·처리 통계: 마을 × 시간대 신고 수, 날짜별 신고, 사건 단계, 마을별 처리 합계, 사건별 처리 경과 |
 | `/chat.html` | 주민 카톡 시뮬레이터 (대회판. 현장판은 카카오 챗봇 연결) |
 | `/farm.html` | 농장주 알림 화면 시뮬레이터 |
@@ -47,8 +47,9 @@ backend/
   fallback/rule_parser.py  규칙 기반 해석기 (LLM 막힐 때)
 frontend/              index.html, stats.html, chat.html, farm.html
 scripts/prepare_facilities.py  필수 데이터 전처리: 주소 → 좌표, 중복 의심 표시
+scripts/prepare_boundaries.py  광령리 주변 리·동 경계 (OpenStreetMap → data/processed/boundaries.geojson)
 data/raw/              실측 CSV(실제), 악취배출시설현황(실제), farms(3곳 실제 위치·1곳 미확인), villages(리사무소 좌표, 인구 임시값)
-data/processed/        facilities.csv(전처리 결과), geocode_cache.json
+data/processed/        facilities.csv(전처리 결과), geocode_cache.json, boundaries.geojson, tiles/(브이월드 배경지도 저장, 제출물 제외)
 data/demo/             시연 시나리오
 ```
 
@@ -71,3 +72,9 @@ data/demo/             시연 시나리오
 - 풍향 계산은 주의 알림을 보낼 바람 위쪽 농장을 고르는 데만 내부적으로 쓰고, 화면·문안에 표시하지 않는다
 - 신고자 정보는 농장에 보내지 않는다, LLM에는 신고 문장만 보낸다
 - 대회판은 실제 전화·문자·민원 제출을 하지 않고 기록만 남긴다
+
+## 지도
+- 배경지도: 브이월드(회색·지도·위성). `.env` 의 `VWORLD_API_KEY` 가 있으면 서버가 타일을 대신 받아 PC에 저장하고(`/tiles/...`), 키는 화면에 드러나지 않습니다. 키가 없으면 OpenStreetMap.
+- 리·동 경계: OpenStreetMap 행정경계(광령리 진하게). `python scripts/prepare_boundaries.py` 로 다시 만듭니다.
+- 주소로 바로 열기: `/index.html?village=광령2리` (그 마을로 이동), `/index.html?view=all` (제주 전체 시설), `/stats.html?village=광령2리`
+- 3D 지도는 넣지 않았습니다(시연 PC에서 화면이 뜨지 않음). 참고한 jeju-map-demo 에서는 경계 처리 방식, 멀리서 이름표 숨기기, 주소로 상태 공유를 가져왔습니다.
