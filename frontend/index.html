@@ -283,7 +283,7 @@ function drawFarms(s){
     .bindTooltip(`광령리 실측 대상 농장 (악취조사 DB)<br>데이터허브 목록에 없음 → 목록 갱신 필요<br><span class="muted">위치: ${esc(f.coord_source)}</span>`).addTo(farmLayer));
 }
 // ---- Agent 행동 기록: 동작별로 묶어 보기 (할 일 → 시청 → 민원서 → 농장별)
-const openK=new Set(['todo','city','farm']);          // 펼쳐 둔 단락 (2초마다 다시 그려도 유지)
+const openK=new Set(['todo']);   // 처음엔 '지금 할 일'만 펼침. 시청·농장 등은 접어 두고, 펼치면 2초마다 다시 그려도 유지
 let actSig='';
 const tm=ts=>`${ts.slice(5,10).replace('-','/')} ${ts.slice(11,16)}`;
 function det(k,sum,body,cls=''){
