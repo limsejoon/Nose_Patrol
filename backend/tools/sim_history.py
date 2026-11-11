@@ -21,7 +21,7 @@ VILLAGE_W = {"광령1리": 0.8, "광령2리": 1.3, "광령3리": 0.6}
 
 
 # 날마다 냄새 정도가 다르다: 0 없음 · 1 약함 · 2 보통 · 3 심함
-# 기준: 제주시 정보공개(2023.1~2026.9) 광령리 민원 있는 날 596일 / 전체 1,369일 ≈ 44%
+# 기준: 제주시 정보공개(2023.1~2026.9) 광령리 민원 있는 날 652일 / 전체 1,369일 ≈ 48% (신고 없는 날 절반 남짓)
 # → 신고 없는 날 약 56%. 날씨가 며칠 이어지듯 냄새 정도도 전날을 따라가는 경향(STAY)이 있다.
 DAY_LEVELS = [0, 1, 2, 3]
 DAY_BASE = [0.56, 0.22, 0.14, 0.08]
@@ -94,7 +94,7 @@ def generate(S, handle_message, farm_respond, approve_complaint, days=30, seed=4
                 continue
             S.fixed_now = ts
             if kind == "msg":
-                handle_message(*val[:2], place_village=val[2])
+                handle_message(*val[:2], place_village=val[2], source="synthetic_history")
             elif kind == "farm":
                 farm_respond(*val)
             elif kind == "approve":

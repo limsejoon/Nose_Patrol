@@ -48,5 +48,38 @@ def facilities():
         return [r for r in csv.DictReader(f) if r["lat"]]
 
 
+def _processed(name):
+    p = config.DATA_PROCESSED / name
+    if not p.exists():
+        return []
+    with open(p, encoding="utf-8-sig") as f:
+        return list(csv.DictReader(f))
+
+
+@lru_cache
+def admin_complaints():
+    """제주시 정보공개청구: 광령리 축산 악취 민원 접수 (2023.1.1~2026.9.30). 접수시각 1개 = 1행.
+    scripts/prepare_admin_records.py 로 PDF에서 만든다. 처리내용 원문·이름은 없다."""
+    return _processed("admin_complaints.csv")
+
+
+@lru_cache
+def admin_inspections():
+    """제주시 정보공개청구: 광령리·고성리 지도점검 673행 (날짜·분류만)."""
+    return _processed("admin_inspections.csv")
+
+
+@lru_cache
+def admin_actions():
+    """제주시 정보공개청구: 광령리·고성리 행정처분 4사례 (사업장명 없이)."""
+    return _processed("admin_actions.csv")
+
+
+@lru_cache
+def admin_manure():
+    """제주시 정보공개청구: 광령·고성 양돈농가 액비살포 9건."""
+    return _processed("admin_manure.csv")
+
+
 def village(name):
     return next((v for v in villages() if v["village"] == name), None)

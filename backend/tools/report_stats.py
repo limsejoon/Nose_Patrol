@@ -8,6 +8,7 @@ from backend import data
 ACTION_LABEL = {"farm_alert": "농장 주의 알림", "city_call": "대표 민원 전화", "sms": "문자",
                 "complaint": "민원서 작성", "farm_response": "농장 조치 응답"}
 STAGES = ["관찰", "주의", "경보", "지속"]
+SOURCE_LABEL = {"simulator": "카톡 시뮬레이터 입력", "demo_script": "시연 대본", "synthetic_history": "가상 한 달 기록"}
 
 
 def _t(x):
@@ -110,9 +111,13 @@ def build(S, days: int | None = 14, village: str | None = None, since_date: str 
     return {
         "now": now.isoformat(timespec="minutes"), "days": days, "village": village,
         "villages": villages,
-        "simulated": any(str(r["user"]).startswith("sim_") for r in reps),
+        # 대회판은 카카오톡 채널이 연결되어 있지 않아 신고는 모두 시연용(가상)이다.
+        "simulated": bool(reps),
+        "data_kind": "시연용 가상 신고 (대회판: 실제 주민 신고 아님)" if reps else None,
+        "sources": {SOURCE_LABEL.get(k, k): n for k, n in Counter(r.get("source", "simulator") for r in reps).items()},
         "kpi": {
             "reports": len(reps), "people": len({r["user"] for r in reps}), "incidents": len(inc_rows),
+            "days_rule": f"최근 {days}일 = 지금부터 {days * 24}시간 전까지(날짜 칸은 걸친 날 모두)" if days and not since_date else None,
             "days_total": len(daily_rows), "quiet_days": sum(1 for d in daily_rows if d["n"] == 0),
             "farm_alerts": cnt_all["farm_alert"], "calls": cnt_all["city_call"],
             "complaints": len(comp_all), "complaints_done": sum(1 for a in comp_all if a.get("approved_at")),
@@ -124,5 +129,6 @@ def build(S, days: int | None = 14, village: str | None = None, since_date: str 
         "heat": [{"village": v, "hours": heat[v]} for v in villages],
         "daily": daily_rows,
         "by_village": by_v,
-        "incidents": inc_rows[:60],
+        "incidents": inc_rows[:60],          # 화면 목록만 60개. 개수는 kpi.incidents / stage_counts (전체)
+        "incidents_all": inc_rows,
     }

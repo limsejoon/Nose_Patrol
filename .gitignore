@@ -8,6 +8,11 @@ data/processed/*
 !data/processed/facilities.csv
 !data/processed/geocode_cache.json
 !data/processed/boundaries.geojson
+# 정보공개청구 PDF에서 뽑은 집계용 CSV (날짜·시각·분류만, 이름·원문 없음)
+!data/processed/admin_complaints.csv
+!data/processed/admin_inspections.csv
+!data/processed/admin_actions.csv
+!data/processed/admin_manure.csv
 # 브이월드 타일 저장소 (PC마다 새로 받음)
 data/processed/tiles/
 

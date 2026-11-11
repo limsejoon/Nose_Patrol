@@ -6,4 +6,5 @@
 | farms.csv | 광령리 실측 대상 농장 4곳과 위치 | 3곳은 브이월드 장소검색 지번 좌표(피그랜드 백록은 이름 유사 추정), 제일양돈은 위치 미확인 |
 | villages.csv | 마을(리) 이름·별칭·좌표·인구 | 좌표는 리사무소 위치(브이월드 장소검색). **인구는 임시값** |
 | 제주특별자치도_악취배출시설현황.csv | 필수 데이터 (사업장 58곳, 2019.7.19 기준). 공공데이터포털 data.go.kr/data/15056020 | 실제 데이터. 원본 표를 그대로 옮김 → `scripts/prepare_facilities.py` 로 `data/processed/facilities.csv` 생성 |
+| (data/processed) admin_*.csv | 제주시 정보공개청구 PDF 4개(민원·지도점검·행정처분·액비살포)에서 뽑은 집계용 CSV | 실제 데이터. 날짜·시각·분류만, 원문·이름 없음. `scripts/prepare_admin_records.py` 로 생성(원본 PDF는 제출물에 넣지 않음) |
 | (추가 예정) wind.csv | 과거 풍향·풍속 (기상청) | API 막힐 때 쓰는 오프라인용 |

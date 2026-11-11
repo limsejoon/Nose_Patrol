@@ -19,6 +19,13 @@
   .seg button.on{background:var(--dark);color:#fff}
   .flab{font-size:13px;color:var(--sub);margin-right:6px}
   .note{font-size:13px;color:var(--sub)}
+  .tag{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:2px 9px;margin-left:6px;vertical-align:2px}
+  .tag.real{background:#E3F1EC;color:#1D5E4F;border:1px solid #A9D2C4}
+  .tag.fake{background:#FFF4E5;color:#7A4A12;border:1px solid #F0C48F}
+  .sect{font-size:17px;margin:26px 2px 8px;color:var(--dark)}
+  .bars .b i.in{background:#AEB8B4}
+  .legend2{display:flex;gap:14px;font-size:12px;color:var(--sub);margin-top:8px}
+  .legend2 i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
   .sim{background:#FFF4E5;border:1px solid #F0C48F;color:#7A4A12;border-radius:8px;padding:6px 12px;font-size:13px}
   .ask{border:2px solid var(--teal)}
   .askhead{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
@@ -110,11 +117,23 @@
     <div id="askLog"></div>
   </section>
 
+  <section class="card" id="realCard">
+    <h3>실제 민원 기록 <span class="tag real">실제 자료</span></h3>
+    <p class="desc">제주시 정보공개청구 · 애월읍 광령리 축산 악취 민원 접수 2023.1.1~2026.9.30. 시간은 <b>접수 시각</b>(냄새가 난 시각과 다를 수 있음)</p>
+    <div class="kpis" id="realKpis"></div>
+    <h3 style="margin-top:16px">접수 시간대별 민원 수</h3>
+    <div id="realHours"></div>
+    <div class="legend2"><span><i style="background:#AEB8B4"></i>지금 정기 실측 시간대 안 (08~11, 14~17, 18~20시)</span><span><i style="background:var(--teal)"></i>밖</span></div>
+    <p class="note" id="realNote" style="margin-top:10px"></p>
+  </section>
+
+  <h2 class="sect">냄새알림 시연 기록 <span class="tag fake">가상 신고</span></h2>
+  <p class="desc" style="margin:0 2px 10px">대회판은 카카오톡 채널이 연결되어 있지 않아, 아래 신고·사건·처리는 모두 시연용 가상 기록입니다. 전화·문자·민원서는 문안만 만들고 실제로 보내지 않습니다.</p>
   <div class="kpis" id="kpis"></div>
 
   <div class="card">
-    <h3>마을 × 시간대 신고 수</h3>
-    <p class="desc">어느 마을에서 하루 중 언제 신고가 몰리는지. 칸 숫자 = 신고 건수(같은 기간 합계)</p>
+    <h3>마을 × 신고 접수 시간대</h3>
+    <p class="desc">어느 마을에서 하루 중 언제 신고가 접수되는지. 칸 숫자 = 신고 건수(같은 기간 합계)</p>
     <div id="heat"></div>
     <div class="ramp">적음 <i style="background:var(--h1)"></i><i style="background:var(--h2)"></i><i style="background:var(--h3)"></i><i style="background:var(--h4)"></i><i style="background:var(--h5)"></i> 많음</div>
   </div>
@@ -192,7 +211,7 @@ async function load(){
     if(F.village) box.querySelector('button[data-v=""]').classList.remove('on');
     villagesInit=true;
   }
-  document.getElementById('simNote').innerHTML=s.simulated?'<span class="sim">가상 신고 기록이 포함되어 있습니다 (대회판 시연용)</span>':'';
+  document.getElementById('simNote').innerHTML=s.simulated?'<span class="sim">아래 시연 기록은 가상 신고입니다 (실제 주민 신고 아님)</span>':'';
   const k=s.kpi;
   const tiles=[
     [k.reports,'신고 건수'],[`${k.quiet_days} / ${k.days_total}일`,'신고 없는 날'],[k.people,'신고한 주민(익명 ID)'],[k.incidents,'사건 수'],
@@ -202,7 +221,7 @@ async function load(){
   document.getElementById('kpis').innerHTML=tiles.map(([v,l])=>`<div class="kpi"><b>${v}</b><span>${l}</span></div>`).join('');
 
   if(!k.reports){
-    ['heat','daily','stages','byVillage','incidents'].forEach(id=>document.getElementById(id).innerHTML='<div class="empty">이 기간에는 신고가 없습니다. 위의 “가상 2주 기록 불러오기”로 시연 데이터를 만들 수 있습니다.</div>');
+    ['heat','daily','stages','byVillage','incidents'].forEach(id=>document.getElementById(id).innerHTML='<div class="empty">이 기간에는 신고가 없습니다. 위의 “가상 한 달 기록 불러오기”로 시연 데이터를 만들 수 있습니다.</div>');
     document.getElementById('dailyDesc').textContent='';document.getElementById('speed').textContent='';return;
   }
 
@@ -253,8 +272,32 @@ async function load(){
 load(); setInterval(load,10000);
 
 // ---- 💬 Agent에게 묻기
-const EXAMPLES=['이번 달 광령2리 오전 신고 몇 건이야?','최근 30일 신고가 가장 많이 몰린 시간대는?','경보까지 간 사건은 대표 전화까지 몇 분 걸렸어?',
-  '2023년부터 실측 초과율이 어떻게 변했어?','악취관리지역 시설이 가장 많은 읍면은?'];
+const EXAMPLES=['실제 민원은 어느 접수 시간대에 몰려?','민원이 정기 측정 시간 밖에 얼마나 접수됐어? 해마다 시간표로도 비교해 줘',
+  '점검 기록에서 포집 시도와 분석 의뢰를 나눠 줘','2023년부터 실측 기준 초과율이 어떻게 변했어?','악취관리지역 시설이 가장 많은 읍면은?',
+  '이번 달 광령2리 오전 신고 몇 건이야?','경보까지 간 사건은 대표 전화까지 몇 분 걸렸어?'];
+async function loadReal(){
+  try{
+    const a=await (await fetch('/api/admin/summary')).json();
+    const h=a.hours, c=a.coverage_current, cy=a.coverage_by_year, ins=a.inspection;
+    const nf=n=>n.toLocaleString('ko-KR');
+    const tiles=[[nf(h.complaints)+'건',`민원 접수 (하루 ${h.per_day}건)`],[`${h.days_with_complaints} / ${nf(h.calendar_days_in_range)}일`,'민원 있는 날'],
+      [c.outside_pct+'%',`지금 실측 시간표 밖 접수 (${nf(c.outside_measurement_hours)} / ${nf(c.complaints_with_time)})`],
+      [cy.outside_pct+'%',`해마다 그 해 시간표 기준 (${nf(cy.outside_measurement_hours)} / ${nf(cy.complaints_with_time)})`],
+      [c.overlap_days+'일','민원일 중 정기 측정과 겹친 날'],
+      [`${ins.administrative_actions.cases_in_requested_period_2023_2026} / ${ins.administrative_actions.cases_in_document}`,'처분 사례 (2023년 이후 / 문서 전체)']];
+    document.getElementById('realKpis').innerHTML=tiles.map(([v,l])=>`<div class="kpi"><b>${v}</b><span>${esc(l)}</span></div>`).join('');
+    const hrs=[...Array(24).keys()].map(i=>h.counts[String(i).padStart(2,'0')+'시']||0);
+    const mx=Math.max(1,...hrs), inSlot=i=>(i>=8&&i<11)||(i>=14&&i<17)||(i>=18&&i<20);
+    document.getElementById('realHours').innerHTML=`<div class="bars">${hrs.map((n,i)=>
+      `<div class="b" data-tip="${i}시~${i+1}시 접수\n민원 ${n}건">${n?`<i class="${inSlot(i)?'in':''}" style="height:${n/mx*100}%"></i>`:'<i class="zero"></i>'}</div>`).join('')}</div>
+      <div class="bx">${hrs.map((n,i)=>`<span>${i%3===0?i+'시':''}</span>`).join('')}</div>`;
+    document.getElementById('realNote').textContent=
+      `정기 실측이 없던 달: ${c.months_without_measurement.join('·')} (그 달 민원 ${nf(c.complaints_in_months_without_measurement)}건) · 금·토·일 정기 측정 0일 · `+
+      `지도점검 ${ins.inspection_rows}행/${ins.inspection_days}일(광령리·고성리 합계) 중 포집·분석 의뢰 ${ins.by_kind['포집·분석 의뢰'].days}일, 포집 시도 ${ins.by_kind['포집 시도'].days}일. `+
+      `민원인 정보가 없어 사람 수는 알 수 없고, 원인 농장은 이 자료로 정할 수 없습니다.`;
+  }catch(e){document.getElementById('realCard').style.display='none';}
+}
+loadReal();
 const askHist=[];
 document.getElementById('askChips').innerHTML=EXAMPLES.map(q=>`<button type="button">${esc(q)}</button>`).join('');
 document.querySelectorAll('#askChips button').forEach(b=>b.onclick=()=>{document.getElementById('askInput').value=b.textContent;askNow()});

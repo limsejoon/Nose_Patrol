@@ -59,9 +59,11 @@ def _recent(village, now):
 def village_status(village, now=None):
     now = now or S.now()
     rec = _recent(village, now)
-    users = {r["user"] for r in rec}
-    n = len(users)
-    avg = sum(r["intensity"] for r in rec) / len(rec) if rec else 0.0
+    latest = {}                       # 같은 사람이 여러 번 보내면 가장 최근 강도 하나만 센다
+    for r in sorted(rec, key=lambda r: r["ts"]):
+        latest[r["user"]] = r["intensity"]
+    n = len(latest)
+    avg = sum(latest.values()) / n if n else 0.0
     v = data.village(village)
     per_1000 = round(1000 * n / v["population"], 2) if v and v["population"] else None
     inc = _inc(village)
@@ -116,8 +118,9 @@ def _escalate(village, st):
         hist = []
         ov = history.overview()
         if ov["n"]:
-            y, rate = list(ov["over15_rate_by_year"].items())[-1]
-            hist.append(f"광령리 측정구역 {y}년 15배 초과율 {rate}%")
+            y, d = list(ov["by_year"].items())[-1]
+            hist.append(f"광령리 악취관리지역 측정구역 {y}년 정기 실측 {d['n']}건 중 {d['over10']}건이 "
+                        f"부지경계 기준(희석배수 10)을 넘음")
         a = _act("complaint", village, {"text": drafts.complaint(village, total, config.PERSIST_HOURS, hist)},
                  status="마을 대표 승인 대기")
         inc["complaint_id"] = a["id"]
@@ -130,8 +133,10 @@ def _parse(text):
     return rule_parser.parse(text, data.villages()) if S.rule_only else parse_report.parse(text)
 
 
-def handle_message(user: str, text: str, place_village: str | None = None) -> dict:
-    """주민 카톡 메시지 하나를 처리하고 답장을 돌려준다."""
+def handle_message(user: str, text: str, place_village: str | None = None, source: str = "simulator") -> dict:
+    """주민 카톡 메시지 하나를 처리하고 답장을 돌려준다.
+    source: 신고가 어디서 왔는지. 대회판은 모두 시연용이다
+      simulator(카톡 시뮬레이터 직접 입력) / demo_script(시연 대본) / synthetic_history(가상 한 달 기록)"""
     u = S.users.setdefault(user, {"village": None, "pending": None})
     p = _parse(text)
 
@@ -156,7 +161,7 @@ def handle_message(user: str, text: str, place_village: str | None = None) -> di
     now = S.now()
     inc = _incident_for(village, now)
     rep = {"id": next(_id), "ts": now, "user": user, "village": village, "text": text,
-           "incident_id": inc["id"],
+           "incident_id": inc["id"], "source": source,
            "intensity": p.get("intensity") or 3, "time": p.get("time") or "지금",
            "odor": p.get("odor"), "place": p.get("place"), "parser": p.get("parser")}
     S.reports.append(rep)
@@ -168,11 +173,11 @@ def handle_message(user: str, text: str, place_village: str | None = None) -> di
     words = {1: "희미함", 2: "약함", 3: "분명함", 4: "꽤 심함", 5: "아주 심함"}
     reply = f"{village} · {words.get(rep['intensity'], '')}({rep['intensity']}단계)으로 접수했어요. 오늘 이 동네 {today}번째 신고예요."
     if "complaint" in done:
-        reply += "\n냄새가 3시간 넘게 이어져 민원서를 작성했고, 마을 대표 승인을 받고 있어요."
+        reply += "\n냄새가 3시간 넘게 이어져 민원서 초안을 만들었어요. 마을 대표가 승인하면 제출해요.(대회판: 실제 제출 안 함)"
     elif "city_call" in done:
-        reply += f"\n이웃 {st['n']}분이 같은 냄새를 신고해서, 주민 대표로 시청에 민원 전화를 넣었어요."
+        reply += f"\n이웃 {st['n']}분이 같은 냄새를 신고해서, 시청에 걸 대표 민원 전화 문안을 만들었어요.(대회판: 실제 발신 안 함)"
     elif "farm_alert" in done:
-        reply += "\n주변 농장에 저감시설 점검을 요청했어요."
+        reply += "\n주변 농장에 저감시설 점검 요청 알림을 보냈어요.(농장주 화면)"
     return {"reply": reply, "parsed": p, "report_id": rep["id"], "stage_before": before, "status": st}
 
 

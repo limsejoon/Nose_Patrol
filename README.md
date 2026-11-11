@@ -11,6 +11,7 @@
 | [2_사용자_매뉴얼.md](docs/2_사용자_매뉴얼.md) | 화면별 사용법, 말로 묻기 예시, 5분 시연 순서 |
 | [3_데이터_활용_명세.md](docs/3_데이터_활용_명세.md) | 필수 데이터(악취배출시설현황)·함께 쓰는 데이터의 출처·이용조건·전처리·분석 흐름, 외부 API, 오픈소스 |
 | [4_결과_설명자료.md](docs/4_결과_설명자료.md) | 문제 정의, Agent 구조, 기능·실행 결과, 검증, 한계, 센터 활용 방안 |
+| [6_질문_평가_결과.md](docs/6_질문_평가_결과.md) | 말로 묻는 분석 질문 15개 자동 채점 결과와 답 원문 |
 | [5_AI_활용_명세.md](docs/5_AI_활용_명세.md) | 사용 모델(분석 Claude Sonnet 5.5, 신고 해석 Claude Haiku 5.5), 프롬프트 위치, AI 활용 범위, 개발에 쓴 AI 도구 |
 | 냄새알림_기획서.html | 기획서 원본(15쪽). PDF는 `scripts/make_submission.py` 로 만듦 |
 
@@ -50,7 +51,7 @@ backend/
   data.py              CSV 읽기
   agent/engine.py      판단 엔진: 해석 → 사건 묶기 → 단계 → 행동
   agent/llm.py         Claude 호출 (공식 anthropic SDK, 실패 시 None → 규칙 기반)
-  agent/analyst.py     말로 묻는 분석 Agent(F4): 프롬프트, 도구 5개, 도구 호출 루프
+  agent/analyst.py     말로 묻는 분석 Agent(F4): 프롬프트, 도구 8개, 도구 호출 루프
   tools/parse_report.py  자연어 신고 해석 (Claude 구조화된 출력 → 실패 시 규칙)
   tools/geo.py         지명 좌표, 풍향, 주의 알림 보낼 바람 위쪽 농장 고르기(내부용)
   tools/history.py     실측 이력·통계
@@ -61,7 +62,9 @@ backend/
 frontend/              index.html, stats.html, chat.html, farm.html
 scripts/prepare_facilities.py  필수 데이터 전처리: 주소 → 좌표, 중복 의심 표시
 scripts/prepare_boundaries.py  광령리 주변 리·동 경계 (OpenStreetMap → data/processed/boundaries.geojson)
-scripts/check.py               자동 점검 17개 (시나리오·원칙·재현성, 키 없이 실행)
+scripts/check.py               자동 점검 26개 (시나리오·원칙·재현성·원자료 검산값, 키 없이 실행)
+scripts/eval_questions.py      말로 묻는 분석 질문 15개 평가 (키 필요, 약 500원)
+scripts/prepare_admin_records.py  정보공개청구 PDF 4개 → data/processed/admin_*.csv (날짜·시각·분류만)
 scripts/make_submission.py     제출물 만들기 (기획서 PDF + 최종 결과물 ZIP → dist/)
 frontend/vendor/leaflet/       지도 라이브러리 Leaflet 1.9.4 (인터넷 없이 동작)
 data/raw/              실측 CSV(실제), 악취배출시설현황(실제), farms(3곳 실제 위치·1곳 미확인), villages(리사무소 좌표, 인구 임시값)
@@ -71,7 +74,7 @@ data/demo/             시연 시나리오
 
 ## 점검과 제출물
 ```
-.venv\Scripts\python scripts\check.py            # 자동 점검 (17/17 통과해야 함)
+.venv\Scripts\python scripts\check.py            # 자동 점검 (26/26 통과해야 함)
 .venv\Scripts\python scripts\make_submission.py  # dist/ 에 기획서 PDF와 최종 결과물 ZIP
 ```
 평가용 Claude 키를 ZIP에 넣으려면 프로젝트 폴더에 `평가용_키.txt` (한 줄: `sk-ant-...`)를 만든 뒤 `make_submission.py` 를 실행합니다. 이 파일과 `dist/` 는 git에 올라가지 않습니다.
@@ -99,15 +102,20 @@ data/demo/             시연 시나리오
 
 ## 말로 묻는 분석 (Claude Agent)
 - 화면: 통계 화면 맨 위 **💬 Agent에게 묻기** (센터 화면 위쪽 링크로도 이동)
-- 모델: `claude-sonnet-5-5` (`.env` 의 `LLM_MODEL` 로 변경). 질문 1건에 도구 1~2번, 약 3~5초, 비용 약 20원(입력 6천·출력 2~5백 토큰 안팎). 신고 해석은 `claude-haiku-5-5` (`LLM_PARSE_MODEL`)
-- 도구 5개 (숫자는 모두 도구가 계산, Claude는 도구 선택과 설명만):
+- 모델: `claude-sonnet-5-5` (`.env` 의 `LLM_MODEL` 로 변경). 질문 1건에 도구 1~2번, 평균 약 4초, 비용 약 30원(입력 1만·출력 4백 토큰 안팎). 신고 해석은 `claude-haiku-5-5` (`LLM_PARSE_MODEL`)
+- 도구 8개 (숫자는 모두 도구가 계산, Claude는 도구 선택과 설명만):
   | 도구 | 하는 일 | 데이터 |
   |---|---|---|
-  | `report_stats` | 기간·마을·시간대별 신고·처리 집계 | 주민 신고 기록 |
-  | `hourly_daily` | 시간대별·날짜별 신고, 가장 몰린 때 | 주민 신고 기록 |
-  | `incident_list` | 사건별 처리 경과와 걸린 시간 | 주민 신고 기록 |
-  | `measurement_stats` | 연도·시간대별 15배 초과율 (농장 합산, 이름 없음) | 악취조사 DB |
-  | `facility_stats` | 읍면·리·구분별 시설 수·부지면적 (이름 없음) | 제주데이터허브 악취배출시설현황 |
+  | `complaint_history` | 실제 민원 1,778건의 연·월·접수 시간대·요일·접수방법별 건수, 처리 종류 | 제주시 정보공개청구 (실제) |
+  | `coverage_compare` | 민원 접수 시각·날짜 × 정기 실측 시간표·측정일 (시간표 밖 비율, 겹친 날, 측정 없던 달·요일) | 정보공개청구 × 악취조사 DB (실제) |
+  | `inspection_history` | 지도점검 종류별(현장확인·포집 시도·포집·분석 의뢰 등), 행정처분 사례(이름 없음), 액비살포 | 제주시 정보공개청구 (실제) |
+  | `measurement_stats` | 연도·시간대별 기준(희석배수 10) 초과 건수·비율, 참고용 15 초과 (농장 합산, 이름 없음) | 악취조사 DB (실제) |
+  | `facility_stats` | 전체 합계와 읍면·리·구분별 시설 수·부지면적 (이름 없음) | 제주데이터허브 악취배출시설현황 (지정) |
+  | `report_stats` | 기간·마을·시간대별 신고·처리 집계 | 냄새알림 신고 (시연용 가상) |
+  | `hourly_daily` | 접수 시간대별·날짜별 신고, 가장 몰린 때 | 냄새알림 신고 (시연용 가상) |
+  | `incident_list` | 사건별 처리 경과와 걸린 시간 | 냄새알림 신고 (시연용 가상) |
+- 도구 결과에는 자료 종류(실제/지정/가상), 출처, 기간, 분모, 계산 정의, 이 자료로 알 수 없는 것(cannot_tell)이 함께 들어가 Claude가 범위를 틀리지 않게 합니다
+- 질문 평가: `scripts/eval_questions.py` (질문 15개, 기대 도구·정답 값·금지 표현 자동 채점) → [docs/6_질문_평가_결과.md](docs/6_질문_평가_결과.md) **15/15**
 - 답 아래 **Agent가 한 일**을 펼치면 어떤 도구를 어떤 조건으로 불렀고 무엇을 받았는지 그대로 보입니다
 - Claude에 보내는 것: 질문 문장, 도구가 계산한 집계값. 신고자 정보·원문 행은 보내지 않습니다
 - 시연 버튼(아침 신고 12건 등)은 빠르게 돌도록 규칙으로 해석하고, 주민 카톡 화면에 직접 쓴 문장만 Claude로 해석합니다

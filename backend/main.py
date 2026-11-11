@@ -9,7 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from backend import config, data
 from backend.agent import analyst, engine, llm
-from backend.tools import history, report_stats, sim_history
+from backend.tools import admin_records, history, report_stats, sim_history
 
 app = FastAPI(title="냄새알림")
 
@@ -111,6 +111,16 @@ def boundaries():
     return Response(p.read_bytes(), media_type="application/geo+json")
 
 
+@app.get("/api/admin/summary")
+def admin_summary():
+    """실제 행정 기록(정보공개청구) 요약: 통계 화면의 '실제 민원 기록' 카드."""
+    return {"hours": admin_records.complaint_history(group_by="hour"),
+            "years": admin_records.complaint_history(group_by="year"),
+            "coverage_current": admin_records.coverage_compare(timetable="current"),
+            "coverage_by_year": admin_records.coverage_compare(timetable="by_year"),
+            "inspection": admin_records.inspection_history()}
+
+
 @app.get("/api/facilities")
 def facilities():
     """악취배출시설(제주데이터허브 필수 데이터)을 지도에 올린다. 같은 자리(같은 좌표)는 하나로 묶는다."""
@@ -146,7 +156,9 @@ def ask(a: Ask):
 @app.get("/api/stats/reports")
 def report_stats_api(days: int = 14, village: str | None = None, since: str | None = None):
     """지역·시간별 신고와 처리 경과. days=0 이면 전체 기간. since=YYYY-MM-DD 를 주면 그날 0시부터."""
-    return report_stats.build(engine.S, days or None, village or None, since)
+    s = report_stats.build(engine.S, days or None, village or None, since)
+    s.pop("incidents_all", None)   # 화면에는 최근 60개만 보낸다
+    return s
 
 
 # ---- 시연용 ----
@@ -167,7 +179,7 @@ def demo_play(name: str = "gwangryeong_morning"):
             if s.get("advance_min"):
                 engine.S.clock_offset += timedelta(minutes=s["advance_min"])
                 continue
-            r = engine.handle_message(s["user"], s["text"], s.get("place_village"))
+            r = engine.handle_message(s["user"], s["text"], s.get("place_village"), source="demo_script")
             log.append({"user": s["user"], "text": s["text"], "reply": r["reply"]})
     finally:
         engine.S.rule_only = False

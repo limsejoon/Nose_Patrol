@@ -248,7 +248,7 @@ function vilPopup(name){
   const lastAct=s.actions.find(a=>a.village===name);
   const label={farm_alert:'농장 주의 알림',city_call:'대표 민원 전화',sms:'문자',complaint:'민원서',farm_response:'농장 응답'};
   return `<b>${esc(name)}</b> <span class="badge s${v.stage}">${v.stage} ${STAGE[v.stage]}</span>
-    <div class="pp">최근 1시간 신고 주민 <b>${v.n}명</b> · 평균 강도 ${v.avg}<br>인구 1천 명당 ${v.per_1000}명 · 오늘 신고 ${nToday}건<br>
+    <div class="pp">최근 1시간 신고 주민 <b>${v.n}명</b> · 평균 강도 ${v.avg}<br>오늘 신고 ${nToday}건<br>
     마지막 처리: ${lastAct?`${label[lastAct.type]||lastAct.type} (${lastAct.ts.slice(11,16)})`:'없음'}</div>
     <a href="stats.html?village=${encodeURIComponent(name)}">📊 이 마을 통계 보기</a>`;
 }
@@ -372,7 +372,7 @@ async function load(){
   document.getElementById('clock').textContent=s.now.replace('T',' ');
   lastState=s; drawFarms(s); drawVillages(s);
   document.getElementById('villages').innerHTML=s.villages.map(v=>
-    `<div class="row vrow" onclick="focusVillage('${v.village}')" title="지도에서 보기"><b>${v.village}</b><span>${v.n}명 · 평균 ${v.avg} · 1천명당 ${v.per_1000}</span><span class="badge s${v.stage}">${v.stage} ${v.stage_name}</span></div>`).join('');
+    `<div class="row vrow" onclick="focusVillage('${v.village}')" title="지도에서 보기"><b>${v.village}</b><span>${v.n}명 · 평균 강도 ${v.avg}</span><span class="badge s${v.stage}">${v.stage} ${v.stage_name}</span></div>`).join('');
   drawActions(s);
   document.getElementById('reports').innerHTML=s.reports.length?s.reports.slice(0,15).map(r=>
     `<div class="row"><span>“${esc(r.text)}”</span><span class="muted">${r.village} · 강도 ${r.intensity} · ${r.time}</span></div>`).join(''):'아직 없음';
