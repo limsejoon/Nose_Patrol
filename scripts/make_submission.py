@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parent.parent
 DIST = ROOT / "dist"
 TEAM = "애월주민"
 EXCLUDE_PREFIX = (".git/", ".venv/", "dist/", "data/processed/tiles/")
-EXCLUDE_NAME = {".env", "평가용_키.txt"}
+EXCLUDE_NAME = {".env", "평가용_키.txt", "약점.html"}   # 약점.html: 팀 내부 분석 문서(제출 안 함)
 
 
 def tracked_files():
