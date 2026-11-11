@@ -149,7 +149,8 @@ def handle_message(user: str, text: str, place_village: str | None = None, sourc
 
     if u["village"] is None:
         u["village"] = place_village or p["village"]
-        if u["pending"] and not p.get("is_report"):
+        # 동네만 알려 준 답("광령 3리요")은 신고가 아니다. 강도 없이 신고로 읽혀도 먼저 보낸 신고를 접수한다.
+        if u["pending"] and (not p.get("is_report") or not p.get("intensity")):
             text, u["pending"] = u["pending"], None
             p = _parse(text)
             p["village"] = None

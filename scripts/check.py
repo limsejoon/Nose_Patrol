@@ -88,6 +88,15 @@ check("평균 강도는 사람별 최근 값으로 (반복 신고 1번만)", vs[
       f"평균 {vs['avg']}, {vs['n']}명, 신고 {vs['reports_window']}건")
 S.reset()
 
+# 3-2. 처음 신고 → 동네 묻기 → 동네만 답함: 먼저 보낸 신고(강도 포함)가 접수돼야 한다
+S.reset(); S.rule_only = True
+engine.handle_message("u_new", "냄새 심하다")
+engine.handle_message("u_new", "광령 3리요")
+S.rule_only = False
+got = [(r["village"], r["intensity"], r["text"]) for r in S.reports]
+check("동네만 답하면 먼저 보낸 신고를 접수 (강도 유지)", got == [("광령3리", 4, "냄새 심하다")], str(got))
+S.reset()
+
 # 4. 규칙 해석기
 cases = {"3시간째 계속 냄새 심함": "지금", "아침 7시부터 냄새 엄청 나네": "07시", "밤 11시 냄새": "23시"}
 for text, want in cases.items():

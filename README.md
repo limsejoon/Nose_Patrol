@@ -62,7 +62,7 @@ backend/
 frontend/              index.html, stats.html, chat.html, farm.html
 scripts/prepare_facilities.py  필수 데이터 전처리: 주소 → 좌표, 중복 의심 표시
 scripts/prepare_boundaries.py  광령리 주변 리·동 경계 (OpenStreetMap → data/processed/boundaries.geojson)
-scripts/check.py               자동 점검 26개 (시나리오·원칙·재현성·원자료 검산값, 키 없이 실행)
+scripts/check.py               자동 점검 27개 (시나리오·원칙·재현성·원자료 검산값, 키 없이 실행)
 scripts/eval_questions.py      말로 묻는 분석 질문 15개 평가 (키 필요, 약 500원)
 scripts/prepare_admin_records.py  정보공개청구 PDF 4개 → data/processed/admin_*.csv (날짜·시각·분류만)
 scripts/make_submission.py     제출물 만들기 (기획서 PDF + 최종 결과물 ZIP → dist/)
@@ -74,7 +74,7 @@ data/demo/             시연 시나리오
 
 ## 점검과 제출물
 ```
-.venv\Scripts\python scripts\check.py            # 자동 점검 (26/26 통과해야 함)
+.venv\Scripts\python scripts\check.py            # 자동 점검 (27/27 통과해야 함)
 .venv\Scripts\python scripts\make_submission.py  # dist/ 에 기획서 PDF와 최종 결과물 ZIP
 ```
 평가용 Claude 키를 ZIP에 넣으려면 프로젝트 폴더에 `평가용_키.txt` (한 줄: `sk-ant-...`)를 만든 뒤 `make_submission.py` 를 실행합니다. 이 파일과 `dist/` 는 git에 올라가지 않습니다.

@@ -376,7 +376,7 @@ async function load(){
   document.getElementById('reports').innerHTML=s.reports.length?s.reports.slice(0,15).map(r=>
     `<div class="row"><span>“${esc(r.text)}”</span><span class="muted">${r.village} · 강도 ${r.intensity} · ${r.time}</span></div>`).join(''):'아직 없음';
 }
-fetch('/api/health').then(r=>r.json()).then(h=>document.getElementById('llm').textContent='해석: '+h.llm);
+fetch('/api/health').then(r=>r.json()).then(h=>document.getElementById('llm').textContent=h.llm_model?`AI: 신고 해석 ${h.llm_parse_model} · 분석 ${h.llm_model}`:'AI: 규칙 기반(Claude 키 없음)');
 // ---- 최근 신고 현황 (24시간 / 이번 달 / 3개월) — /api/stats/reports 재사용
 let recentP='24h';
 try{recentP=localStorage.getItem('recentP')||'24h'}catch{}
