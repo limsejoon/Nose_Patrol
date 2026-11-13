@@ -35,6 +35,16 @@ def tracked_files():
 
 
 def make_pdf():
+    # 문서 빌드 의존성이 있으면 HTML의 같은 내용을 전용 벡터 렌더러로 생성한다.
+    # 브라우저 프로세스를 실행할 수 없는 환경에서도 빌드할 수 있다.
+    try:
+        import reportlab  # noqa: F401
+        from PIL import Image  # noqa: F401
+    except ImportError:
+        pass
+    else:
+        from render_proposal_pdf import render
+        return render(DIST / f"{TEAM}_냄새알림_기획서.pdf")
     edge = None
     for base in (os.environ.get("ProgramFiles(x86)"), os.environ.get("ProgramFiles")):
         if base and Path(base, "Microsoft/Edge/Application/msedge.exe").exists():
